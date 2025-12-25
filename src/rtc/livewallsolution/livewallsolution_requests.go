@@ -32,18 +32,17 @@ type RealTimeInfo struct {
 
 // QueryImageRequest 查询审核视频截图请求
 type QueryImageRequest struct {
-	TaskId      string `json:"taskId,omitempty"`      // 审核任务的唯一标识,可选
-	ChannelName string `json:"channelName,omitempty"` // 进行内容审核的音视频房间名称,可选
-	StartTime   int64  `json:"startTime"`             // 截帧开始时间,Unix时间戳,精确到毫秒,必选
-	EndTime     int64  `json:"endTime"`               // 截帧结束时间,Unix时间戳,精确到毫秒,必选
-	Record      int    `json:"record,omitempty"`      // 是否返回录制文件地址,可选,0:(默认)不返回,1:返回
+	TaskId   string `json:"taskId,omitempty"`   // 音视频内容安全审核任务ID,是其唯一标识,可选
+	Levels   string `json:"levels,omitempty"`   // String形式的数组,0:正常;1:嫌疑;2:确定,可选
+	PageSize int    `json:"pageSize,omitempty"` // 每页查询数据条数,取值范围0~1000,可选
+	PageNum  int    `json:"pageNum,omitempty"`  // 查询页码,可选
 }
 
 // QueryAudioTaskRequest 查询审核音频断句请求
 type QueryAudioTaskRequest struct {
-	TaskId      string `json:"taskId,omitempty"`      // 审核任务的唯一标识,可选
+	TaskId      string `json:"taskId,omitempty"`      // 音视频内容审核任务ID,是其唯一标识,可选
 	ChannelName string `json:"channelName,omitempty"` // 进行内容审核的音视频房间名称,可选
 	StartTime   int64  `json:"startTime"`             // 断句开始时间,Unix时间戳,精确到毫秒,必选
-	EndTime     int64  `json:"endTime"`               // 断句结束时间,Unix时间戳,精确到毫秒,必选
-	Record      int    `json:"record,omitempty"`      // 是否返回录制文件地址,可选,0:(默认)不返回,1:返回
+	EndTime     int64  `json:"endTime"`               // 断句结束时间,必选
+	Record      int    `json:"record,omitempty"`      // 是否返回录制文件地址,0:(默认)不返回,1:返回,可选
 }
