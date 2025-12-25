@@ -246,11 +246,12 @@ func testCreateLivewallTask(service livewallsolution.LivewallSolutionService) {
 	fmt.Println("\n1. 测试创建安全通审核任务")
 
 	request := &livewallsolution.CreateTaskRequest{
-		MonitorUid:  666666,            // 安全通虚拟用户的UID
-		ChannelName: "test_channel_01", // 房间名称
-		DetectType:  0,                 // 0:视频与音频同时检测, 1:仅检测视频, 2:仅检测音频
-		ScFrequency: 5,                 // 截图检测频率(秒)
-		CallbackUrl: "https://example.com/callback",
+		MonitorUid:  666666,                         // 安全通虚拟用户的UID
+		ChannelName: "test_channel_01",              // 房间名称
+		DetectType:  0,                              // 0:视频与音频同时检测, 1:仅检测视频, 2:仅检测音频
+		ScFrequency: 5,                              // 截图检测频率(秒)
+		SecretId:    "your_secret_id",               // 你的安全通secretId
+		CallbackUrl: "https://example.com/callback", // 回调地址
 		AutoMaskConfig: livewallsolution.AutoMaskConfig{
 			EnableMask: true,              // 开启自动打码
 			MaskType:   0,                 // 0:黑屏, 1:模糊
@@ -278,10 +279,6 @@ func testStopLivewallTask(service livewallsolution.LivewallSolutionService) {
 			{
 				ChannelName: "test_channel_01", // 房间名称
 				Status:      100,               // 100表示停止检测
-			},
-			{
-				ChannelName: "test_channel_02",
-				Status:      100,
 			},
 		},
 	}

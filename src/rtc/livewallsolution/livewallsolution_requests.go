@@ -6,8 +6,10 @@ type CreateTaskRequest struct {
 	ChannelName    string         `json:"channelName"`              // 需要进行内容审核的音视频房间名称,必选
 	DetectType     int            `json:"detectType,omitempty"`     // 安全通机器过检的类型,0:视频与音频同时检测,1:仅检测视频,2:仅检测音频,可选,默认0
 	ScFrequency    int            `json:"scFrequency,omitempty"`    // 截图检测频率,取值范围1-600秒,可选,默认5秒
+	SecretId       string         `json:"secretId"`                 // 安全通自定义产品的 secretId
 	CallbackUrl    string         `json:"callbackUrl,omitempty"`    // 接收审核结果的回调地址,可选
 	AutoMaskConfig AutoMaskConfig `json:"autoMaskConfig,omitempty"` // 自动打码配置,可选
+	StopInSecond   int            `json:"stopInSecond,omitempty"`   // 设定一个时间值，该秒数后由网易云信自动停止安全通检测任务。取值范围为 [1, 259200]
 }
 
 // AutoMaskConfig 自动打码配置
