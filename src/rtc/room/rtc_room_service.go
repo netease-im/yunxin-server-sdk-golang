@@ -24,4 +24,10 @@ type RtcRoomService interface {
 
 	// AddMemberToKicklistV3 V3版本添加成员到踢出列表
 	AddMemberToKicklistV3(request *RtcAddMemberToKicklistRequestV3) (*RtcResult[*RtcAddMemberToKicklistResponse], error)
+
+	// DeleteRoomV2 V2版本删除房间
+	DeleteRoomV2(request *RtcDeleteRoomRequestV2) (*RtcResult[*RtcDeleteRoomResponse], error)
+
+	// DeleteRoomV3 V3版本删除房间
+	DeleteRoomV3(request *RtcDeleteRoomRequestV3) (*RtcResult[*RtcDeleteRoomResponse], error)
 }

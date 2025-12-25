@@ -10,4 +10,6 @@ const (
 	AddMemberToKicklistV2             = "/v2/api/kicklist/{cid}/members/{uid}"            // V2版本添加成员到踢出列表
 	AddMemberToKicklistV2WithDuration = "/v2/api/kicklist/{cid}/members/{uid}/{duration}" // V2版本添加成员到踢出列表(带时长)
 	AddMemberToKicklistV3             = "/v3/api/kicklist/members"                        // V3版本添加成员到踢出列表
+	DeleteRoomV2                      = "/v2/api/rooms/{cid}"                             // V2版本删除房间
+	DeleteRoomV3                      = "/v3/api/rooms"                                   // V3版本删除房间
 )

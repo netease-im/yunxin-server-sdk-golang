@@ -13,8 +13,8 @@ import (
 
 func main() {
 	// 请替换为你的实际 appkey 和 appsecret
-	appkey := "b882128a2a30430fd3269b2a272565df"
-	appsecret := "4eb5f9177a7b"
+	appkey := "xxx"
+	appsecret := "yyy"
 
 	fmt.Println("=== 云信 RTC 房间服务测试 ===")
 
@@ -48,6 +48,12 @@ func main() {
 
 	// 测试添加成员到踢出列表（V3版本）
 	//testAddMemberToKicklistV3(rtcRoomService)
+
+	// 测试删除房间（V2版本）
+	//testDeleteRoomV2(rtcRoomService)
+
+	// 测试删除房间（V3版本）
+	//testDeleteRoomV3(rtcRoomService)
 
 	// 关闭客户端
 	httpClient.Shutdown()
@@ -179,6 +185,40 @@ func testAddMemberToKicklistV3(service room.RtcRoomService) {
 	}
 
 	printResult("添加成员到踢出列表（V3版本）", result)
+}
+
+// 测试删除房间（V2版本）
+func testDeleteRoomV2(service room.RtcRoomService) {
+	fmt.Println("\n8. 测试删除房间（V2版本）")
+
+	request := &room.RtcDeleteRoomRequestV2{
+		Cid: 1349545895743435, // 替换为实际的房间ID
+	}
+
+	result, err := service.DeleteRoomV2(request)
+	if err != nil {
+		logrus.Infof("删除房间（V2版本）失败: %v", err)
+		return
+	}
+
+	printResult("删除房间（V2版本）", result)
+}
+
+// 测试删除房间（V3版本）
+func testDeleteRoomV3(service room.RtcRoomService) {
+	fmt.Println("\n9. 测试删除房间（V3版本）")
+
+	request := &room.RtcDeleteRoomRequestV3{
+		Cname: "test_room_001", // 替换为实际的房间名称
+	}
+
+	result, err := service.DeleteRoomV3(request)
+	if err != nil {
+		logrus.Infof("删除房间（V3版本）失败: %v", err)
+		return
+	}
+
+	printResult("删除房间（V3版本）", result)
 }
 
 // 通用的结果打印函数

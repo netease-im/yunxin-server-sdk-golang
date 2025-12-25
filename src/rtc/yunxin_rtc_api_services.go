@@ -32,3 +32,8 @@ func (s *YunxinRtcApiServices) GetRtcRoomService() room.RtcRoomService {
 func (s *YunxinRtcApiServices) GetRtcCloudRecordService() cloud_record.CloudRecordService {
 	return s.rtcCloudRecordService
 }
+
+// GetRtcTaskService 获取RTC云端播放服务
+func (s *YunxinRtcApiServices) GetRtcTaskService() task.RtcTaskService {
+	return s.rtcTaskService
+}

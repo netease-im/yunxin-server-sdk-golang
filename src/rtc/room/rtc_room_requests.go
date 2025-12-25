@@ -48,3 +48,15 @@ type RtcAddMemberToKicklistRequestV3 struct {
 	Uid      uint64 `json:"uid"`                // 用户ID
 	Duration int64  `json:"duration,omitempty"` // 时长
 }
+
+// RtcDeleteRoomRequestV2 V2版本删除房间请求
+// See https://doc.yunxin.163.com/nertc/server-apis/DM2NzQyMTc?platform=server
+type RtcDeleteRoomRequestV2 struct {
+	Cid int64 `json:"cid"` // 房间ID
+}
+
+// RtcDeleteRoomRequestV3 V3版本删除房间请求
+// See https://doc.yunxin.163.com/nertc/server-apis/DM2NzQyMTc?platform=server
+type RtcDeleteRoomRequestV3 struct {
+	Cname string `json:"cname"` // 房间名称
+}

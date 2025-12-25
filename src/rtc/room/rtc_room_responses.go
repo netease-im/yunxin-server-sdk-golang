@@ -41,3 +41,10 @@ type RtcAddMemberToKicklistResponse struct {
 	RequestId string `json:"requestId"` // 请求ID
 	Errmsg    string `json:"errmsg"`    // 错误信息
 }
+
+// RtcDeleteRoomResponse 删除房间响应
+type RtcDeleteRoomResponse struct {
+	Code      int    `json:"code"`      // 状态码
+	RequestId string `json:"requestId"` // 请求ID
+	Errmsg    string `json:"errmsg"`    // 错误信息
+}

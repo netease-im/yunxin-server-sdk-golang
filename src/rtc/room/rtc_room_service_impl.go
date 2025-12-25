@@ -149,6 +149,34 @@ func (s *rtcRoomService) AddMemberToKicklistV3(request *RtcAddMemberToKicklistRe
 	return convertToRtcResult[*RtcAddMemberToKicklistResponse](apiResponse)
 }
 
+// DeleteRoomV2 V2版本删除房间
+func (s *rtcRoomService) DeleteRoomV2(request *RtcDeleteRoomRequestV2) (*RtcResult[*RtcDeleteRoomResponse], error) {
+	pathParams := map[string]string{
+		"cid": strconv.FormatInt(request.Cid, 10),
+	}
+
+	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRoomV2, pathParams, nil, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return convertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
+}
+
+// DeleteRoomV3 V3版本删除房间
+func (s *rtcRoomService) DeleteRoomV3(request *RtcDeleteRoomRequestV3) (*RtcResult[*RtcDeleteRoomResponse], error) {
+	queryString := map[string]string{
+		"cname": request.Cname,
+	}
+
+	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRoomV3, nil, queryString, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return convertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
+}
+
 // convertToRtcResult 将YunxinApiResponse转换为RtcResult[T]
 func convertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[T], error) {
 	httpCode := apiResponse.GetHttpCode()
