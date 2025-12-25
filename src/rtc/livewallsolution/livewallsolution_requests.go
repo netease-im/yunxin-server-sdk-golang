@@ -1,0 +1,49 @@
+package livewallsolution
+
+// CreateTaskRequest 创建安全通审核任务请求
+type CreateTaskRequest struct {
+	MonitorUid     int64          `json:"monitorUid"`               // 安全通虚拟用户加入房间时使用的uid,必选
+	ChannelName    string         `json:"channelName"`              // 需要进行内容审核的音视频房间名称,必选
+	DetectType     int            `json:"detectType,omitempty"`     // 安全通机器过检的类型,0:视频与音频同时检测,1:仅检测视频,2:仅检测音频,可选,默认0
+	ScFrequency    int            `json:"scFrequency,omitempty"`    // 截图检测频率,取值范围1-600秒,可选,默认5秒
+	CallbackUrl    string         `json:"callbackUrl,omitempty"`    // 接收审核结果的回调地址,可选
+	AutoMaskConfig AutoMaskConfig `json:"autoMaskConfig,omitempty"` // 自动打码配置,可选
+}
+
+// AutoMaskConfig 自动打码配置
+type AutoMaskConfig struct {
+	EnableMask bool    `json:"enableMask,omitempty"` // 是否开启自动打码,可选
+	MaskType   int     `json:"maskType,omitempty"`   // 打码类型,0:黑屏,1:模糊,可选,默认0
+	Duration   int     `json:"duration,omitempty"`   // 打码持续时间,单位秒,可选,默认5秒
+	UnmaskUids []int64 `json:"unmaskUids,omitempty"` // 不打码的用户UID列表,可选
+	MaskArea   int     `json:"maskArea,omitempty"`   // 打码区域,0:全部区域打码,1:精准区域打码,可选,默认0
+}
+
+// StopTaskRequest 停止安全通审核任务请求
+type StopTaskRequest struct {
+	RealTimeInfoList []RealTimeInfo `json:"realTimeInfoList"` // 直播实时信息列表,最多100条,必选
+}
+
+// RealTimeInfo 直播实时信息
+type RealTimeInfo struct {
+	ChannelName string `json:"channelName"` // 需要停止实时音视频安全通审核任务的房间名称,必选
+	Status      int    `json:"status"`      // 检测状态,请设置为100表示停止检测,必选
+}
+
+// QueryImageRequest 查询审核视频截图请求
+type QueryImageRequest struct {
+	TaskId      string `json:"taskId,omitempty"`      // 审核任务的唯一标识,可选
+	ChannelName string `json:"channelName,omitempty"` // 进行内容审核的音视频房间名称,可选
+	StartTime   int64  `json:"startTime"`             // 截帧开始时间,Unix时间戳,精确到毫秒,必选
+	EndTime     int64  `json:"endTime"`               // 截帧结束时间,Unix时间戳,精确到毫秒,必选
+	Record      int    `json:"record,omitempty"`      // 是否返回录制文件地址,可选,0:(默认)不返回,1:返回
+}
+
+// QueryAudioTaskRequest 查询审核音频断句请求
+type QueryAudioTaskRequest struct {
+	TaskId      string `json:"taskId,omitempty"`      // 审核任务的唯一标识,可选
+	ChannelName string `json:"channelName,omitempty"` // 进行内容审核的音视频房间名称,可选
+	StartTime   int64  `json:"startTime"`             // 断句开始时间,Unix时间戳,精确到毫秒,必选
+	EndTime     int64  `json:"endTime"`               // 断句结束时间,Unix时间戳,精确到毫秒,必选
+	Record      int    `json:"record,omitempty"`      // 是否返回录制文件地址,可选,0:(默认)不返回,1:返回
+}
