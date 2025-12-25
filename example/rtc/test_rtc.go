@@ -171,10 +171,11 @@ func testListRoomMembersV3(service room.RtcRoomService) {
 func testAddMemberToKicklistV2(service room.RtcRoomService) {
 	fmt.Println("\n6. 测试添加成员到踢出列表（V2版本）")
 
+	duration := uint64(3600) // 踢出时长1小时（秒）
 	request := &room.RtcAddMemberToKicklistRequestV2{
 		Cid:      1349545916223392, // 替换为实际的房间ID
 		Uid:      1764309371,
-		Duration: 3600, // 踢出时长1小时（秒）
+		Duration: &duration,
 	}
 
 	result, err := service.AddMemberToKicklistV2(request)
@@ -190,10 +191,11 @@ func testAddMemberToKicklistV2(service room.RtcRoomService) {
 func testAddMemberToKicklistV3(service room.RtcRoomService) {
 	fmt.Println("\n7. 测试添加成员到踢出列表（V3版本）")
 
+	duration := uint64(3600) // 踢出时长1小时（秒）
 	request := &room.RtcAddMemberToKicklistRequestV3{
 		Cname:    "80191043", // 替换为实际的房间名
 		Uid:      1764309371,
-		Duration: 3600, // 踢出时长1小时（秒）
+		Duration: &duration,
 	}
 
 	result, err := service.AddMemberToKicklistV3(request)

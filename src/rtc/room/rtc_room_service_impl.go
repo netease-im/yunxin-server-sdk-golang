@@ -119,9 +119,9 @@ func (s *rtcRoomService) AddMemberToKicklistV2(request *RtcAddMemberToKicklistRe
 		"uid": strconv.FormatUint(request.Uid, 10),
 	}
 
-	if request.Duration != 0 {
+	if request.Duration != nil {
 		uri = AddMemberToKicklistV2WithDuration
-		pathParams["duration"] = strconv.FormatInt(request.Duration, 10)
+		pathParams["duration"] = strconv.FormatUint(*request.Duration, 10)
 	}
 
 	apiResponse, err := s.httpClient.ExecuteJson(http.POST, uri, pathParams, nil, "")
@@ -139,8 +139,8 @@ func (s *rtcRoomService) AddMemberToKicklistV3(request *RtcAddMemberToKicklistRe
 		"uid":   strconv.FormatUint(request.Uid, 10),
 	}
 
-	if request.Duration != 0 {
-		queryString["duration"] = strconv.FormatInt(request.Duration, 10)
+	if request.Duration != nil {
+		queryString["duration"] = strconv.FormatUint(*request.Duration, 10)
 	}
 
 	apiResponse, err := s.httpClient.ExecuteJson(http.POST, AddMemberToKicklistV3, nil, queryString, "")

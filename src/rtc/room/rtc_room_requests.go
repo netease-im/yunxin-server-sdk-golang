@@ -36,17 +36,17 @@ type RtcListRoomMembersRequestV3 struct {
 // RtcAddMemberToKicklistRequestV2 V2版本添加成员到踢出列表请求
 // See https://doc.yunxin.163.com/nertc/server-apis/TA5MTExNjg?platform=server
 type RtcAddMemberToKicklistRequestV2 struct {
-	Cid      int64  `json:"cid"`                // 房间ID
-	Uid      uint64 `json:"uid"`                // 用户ID
-	Duration int64  `json:"duration,omitempty"` // 时长
+	Cid      int64   `json:"cid"`                // 房间ID
+	Uid      uint64  `json:"uid"`                // 用户ID
+	Duration *uint64 `json:"duration,omitempty"` // 时长
 }
 
 // RtcAddMemberToKicklistRequestV3 V3版本添加成员到踢出列表请求
 // See https://doc.yunxin.163.com/nertc/server-apis/TA5MTExNjg?platform=server
 type RtcAddMemberToKicklistRequestV3 struct {
-	Cname    string `json:"cname"`              // 房间名称
-	Uid      uint64 `json:"uid"`                // 用户ID
-	Duration int64  `json:"duration,omitempty"` // 时长
+	Cname    string  `json:"cname"`              // 房间名称
+	Uid      uint64  `json:"uid"`                // 用户ID
+	Duration *uint64 `json:"duration,omitempty"` // 时长
 }
 
 // RtcDeleteRoomRequestV2 V2版本删除房间请求
