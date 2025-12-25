@@ -2,6 +2,8 @@ package livewallsolution
 
 // CreateTaskResponse 创建安全通审核任务响应
 type CreateTaskResponse struct {
+	Code   int              `json:"code"`   // 状态码
+	Msg    string           `json:"msg"`    // 状态描述
 	Result CreateTaskResult `json:"result"` // 接口响应结果,通常包含业务相关的响应结果
 }
 
@@ -25,6 +27,8 @@ type CreateTaskEvidence struct {
 
 // StopTaskResponse 停止安全通审核任务响应
 type StopTaskResponse struct {
+	Code   int              `json:"code"`   // 状态码
+	Msg    string           `json:"msg"`    // 状态描述
 	Result []StopTaskResult `json:"result"` // 接口返回结果,通常包含业务相关的返回结果
 }
 
@@ -37,6 +41,8 @@ type StopTaskResult struct {
 
 // QueryImageResponse 查询审核视频截图响应
 type QueryImageResponse struct {
+	Code        int              `json:"code"`        // 状态码
+	Msg         string           `json:"msg"`         // 状态描述
 	Result      QueryImageResult `json:"result"`      // 接口返回结果,通常包含业务相关的返回结果
 	ChannelName string           `json:"channelName"` // 进行内容审核的音视频房间名称
 }
@@ -66,6 +72,8 @@ type ImageResultRow struct {
 
 // QueryAudioTaskResponse 查询审核音频断句响应
 type QueryAudioTaskResponse struct {
+	Code        int           `json:"code"`        // 状态码
+	Msg         string        `json:"msg"`         // 状态描述
 	Result      []AudioResult `json:"result"`      // 接口返回结果,通常包含业务相关的返回结果
 	ChannelName string        `json:"channelName"` // 进行内容审核的音视频房间名称
 }
