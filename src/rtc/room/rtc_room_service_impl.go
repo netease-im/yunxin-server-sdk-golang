@@ -66,12 +66,14 @@ func (s *rtcRoomService) GetRoomByCname(request *RtcGetRoomByCnameRequest) (*Rtc
 
 // ListRoomMembersV2 V2版本列出房间成员
 func (s *rtcRoomService) ListRoomMembersV2(request *RtcListRoomMembersRequestV2) (*RtcResult[*RtcListRoomMembersResponse], error) {
+	uri := ListMembersV2
 	pathParams := map[string]string{
 		"cid": strconv.FormatInt(request.Cid, 10),
 	}
 
 	if request.Uid != 0 {
 		pathParams["uid"] = strconv.FormatUint(request.Uid, 10)
+		uri = ListMembersV2WithUid
 	}
 
 	queryString := make(map[string]string)
@@ -79,7 +81,7 @@ func (s *rtcRoomService) ListRoomMembersV2(request *RtcListRoomMembersRequestV2)
 		queryString["userRole"] = strconv.Itoa(*request.UserRole)
 	}
 
-	apiResponse, err := s.httpClient.ExecuteJson(http.GET, ListMembersV2, pathParams, queryString, "")
+	apiResponse, err := s.httpClient.ExecuteJson(http.GET, uri, pathParams, queryString, "")
 	if err != nil {
 		return nil, err
 	}
