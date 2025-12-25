@@ -80,7 +80,7 @@ type QueryAudioTaskResponse struct {
 
 // AudioResult result字段说明
 type AudioResult struct {
-	SegmentId    string         `json:"segmentId"`    // 直播断播唯一id
+	SegmentId    string         `json:"segmentId"`    // 直播音频断句id
 	Id           int64          `json:"id"`           // 唯一序号,固定顺序为0,无需关注
 	TaskId       string         `json:"taskId"`       // 音视频安全通审核任务id,是其唯一标识
 	Action       int            `json:"action"`       // 检测结果,0:通过,1:嫌疑,2:不通过
