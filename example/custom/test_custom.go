@@ -43,7 +43,6 @@ func main() {
 		return
 	}
 
-	// 将响应转换为JSON格式进行美化打印
 	responseJSON, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
 		fmt.Printf("响应JSON序列化失败: %v\n", err)
