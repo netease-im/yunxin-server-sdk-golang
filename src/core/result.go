@@ -2,11 +2,11 @@ package core
 
 // Result 结果类型
 type Result[T any] struct {
-	Endpoint string
-	Code     int
-	TraceId  string
-	Msg      string
-	Response T
+	Endpoint string `json:"endpoint"`
+	Code     int    `json:"code"`
+	TraceId  string `json:"traceId"`
+	Msg      string `json:"msg"`
+	Response T      `json:"response"`
 }
 
 // NewResult 创建结果对象
