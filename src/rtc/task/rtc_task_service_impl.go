@@ -32,7 +32,7 @@ func (s *rtcTaskService) CreateTask(request *TaskCreateRequest) (*RtcResult[*Tas
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskCreateResponse](apiResponse)
+	return ConvertToRtcResult[*TaskCreateResponse](apiResponse)
 }
 
 // UpdateTaskV2 V2版本更新云端播放任务
@@ -47,7 +47,7 @@ func (s *rtcTaskService) UpdateTaskV2(request *TaskUpdateRequestV2) (*RtcResult[
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskUpdateResponse](apiResponse)
+	return ConvertToRtcResult[*TaskUpdateResponse](apiResponse)
 }
 
 // UpdateTaskV3 V3版本更新云端播放任务
@@ -66,7 +66,7 @@ func (s *rtcTaskService) UpdateTaskV3(request *TaskUpdateRequestV3) (*RtcResult[
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskUpdateResponse](apiResponse)
+	return ConvertToRtcResult[*TaskUpdateResponse](apiResponse)
 }
 
 // QueryTaskV2 V2版本查询云端播放任务
@@ -81,7 +81,7 @@ func (s *rtcTaskService) QueryTaskV2(request *TaskQueryRequestV2) (*RtcResult[*T
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskQueryResponse](apiResponse)
+	return ConvertToRtcResult[*TaskQueryResponse](apiResponse)
 }
 
 // QueryTaskV3 V3版本查询云端播放任务
@@ -100,7 +100,7 @@ func (s *rtcTaskService) QueryTaskV3(request *TaskQueryRequestV3) (*RtcResult[*T
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskQueryResponse](apiResponse)
+	return ConvertToRtcResult[*TaskQueryResponse](apiResponse)
 }
 
 // PauseTaskV2 V2版本暂停云端播放任务
@@ -115,7 +115,7 @@ func (s *rtcTaskService) PauseTaskV2(request *TaskPauseRequestV2) (*RtcResult[*T
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskPauseResponse](apiResponse)
+	return ConvertToRtcResult[*TaskPauseResponse](apiResponse)
 }
 
 // PauseTaskV3 V3版本暂停云端播放任务
@@ -134,7 +134,7 @@ func (s *rtcTaskService) PauseTaskV3(request *TaskPauseRequestV3) (*RtcResult[*T
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskPauseResponse](apiResponse)
+	return ConvertToRtcResult[*TaskPauseResponse](apiResponse)
 }
 
 // ResumeTaskV2 V2版本恢复云端播放任务
@@ -149,7 +149,7 @@ func (s *rtcTaskService) ResumeTaskV2(request *TaskResumeRequestV2) (*RtcResult[
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskResumeResponse](apiResponse)
+	return ConvertToRtcResult[*TaskResumeResponse](apiResponse)
 }
 
 // ResumeTaskV3 V3版本恢复云端播放任务
@@ -168,7 +168,7 @@ func (s *rtcTaskService) ResumeTaskV3(request *TaskResumeRequestV3) (*RtcResult[
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskResumeResponse](apiResponse)
+	return ConvertToRtcResult[*TaskResumeResponse](apiResponse)
 }
 
 // DestroyTaskV2 V2版本销毁云端播放任务
@@ -183,7 +183,7 @@ func (s *rtcTaskService) DestroyTaskV2(request *TaskDestroyRequestV2) (*RtcResul
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskDestroyResponse](apiResponse)
+	return ConvertToRtcResult[*TaskDestroyResponse](apiResponse)
 }
 
 // DestroyTaskV3 V3版本销毁云端播放任务
@@ -202,50 +202,5 @@ func (s *rtcTaskService) DestroyTaskV3(request *TaskDestroyRequestV3) (*RtcResul
 		return nil, err
 	}
 
-	return convertToRtcResult[*TaskDestroyResponse](apiResponse)
-}
-
-// convertToRtcResult 将YunxinApiResponse转换为RtcResult[T]
-func convertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[T], error) {
-	httpCode := apiResponse.GetHttpCode()
-	code := 0
-	requestId := ""
-	msg := ""
-	var rtcResponse T
-
-	defer func() {
-		if r := recover(); r != nil {
-			msg = apiResponse.GetData()
-		}
-	}()
-
-	var jsonObj map[string]interface{}
-	if err := json.Unmarshal([]byte(apiResponse.GetData()), &jsonObj); err == nil {
-		if codeVal, ok := jsonObj["code"]; ok {
-			if codeFloat, ok := codeVal.(float64); ok {
-				code = int(codeFloat)
-			}
-		}
-
-		if requestIdVal, ok := jsonObj["requestId"]; ok {
-			if requestIdStr, ok := requestIdVal.(string); ok {
-				requestId = requestIdStr
-			}
-		}
-
-		if errmsgVal, ok := jsonObj["errmsg"]; ok {
-			if errmsgStr, ok := errmsgVal.(string); ok {
-				msg = errmsgStr
-			}
-		}
-
-		// 解析响应对象
-		if err := json.Unmarshal([]byte(apiResponse.GetData()), &rtcResponse); err != nil {
-			msg = apiResponse.GetData()
-		}
-	} else {
-		msg = apiResponse.GetData()
-	}
-
-	return NewRtcResult(apiResponse.GetEndpoint(), code, httpCode, requestId, apiResponse.GetTraceId(), msg, rtcResponse), nil
+	return ConvertToRtcResult[*TaskDestroyResponse](apiResponse)
 }

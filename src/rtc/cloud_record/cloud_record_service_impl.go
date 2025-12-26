@@ -32,7 +32,7 @@ func (s *cloudRecordService) CreateCloudRecordV2(request *CloudRecordCreateReque
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordCreateResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordCreateResponse](apiResponse)
 }
 
 // CreateCloudRecordV3 V3版本创建云端录制任务
@@ -51,7 +51,7 @@ func (s *cloudRecordService) CreateCloudRecordV3(request *CloudRecordCreateReque
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordCreateResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordCreateResponse](apiResponse)
 }
 
 // UpdateLayoutV2 V2版本更新录制布局
@@ -66,7 +66,7 @@ func (s *cloudRecordService) UpdateLayoutV2(request *CloudRecordUpdateLayoutRequ
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordUpdateLayoutResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordUpdateLayoutResponse](apiResponse)
 }
 
 // UpdateLayoutV3 V3版本更新录制布局
@@ -85,7 +85,7 @@ func (s *cloudRecordService) UpdateLayoutV3(request *CloudRecordUpdateLayoutRequ
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordUpdateLayoutResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordUpdateLayoutResponse](apiResponse)
 }
 
 // QueryTaskV2 V2版本查询云端录制任务
@@ -100,7 +100,7 @@ func (s *cloudRecordService) QueryTaskV2(request *CloudRecordQueryTaskRequestV2)
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordQueryTaskResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordQueryTaskResponse](apiResponse)
 }
 
 // QueryTaskV3 V3版本查询云端录制任务
@@ -119,7 +119,7 @@ func (s *cloudRecordService) QueryTaskV3(request *CloudRecordQueryTaskRequestV3)
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordQueryTaskResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordQueryTaskResponse](apiResponse)
 }
 
 // UpdateSubscriptionV2 V2版本更新订阅名单
@@ -134,7 +134,7 @@ func (s *cloudRecordService) UpdateSubscriptionV2(request *CloudRecordUpdateSubs
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordUpdateSubscriptionResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordUpdateSubscriptionResponse](apiResponse)
 }
 
 // UpdateSubscriptionV3 V3版本更新订阅名单
@@ -153,7 +153,7 @@ func (s *cloudRecordService) UpdateSubscriptionV3(request *CloudRecordUpdateSubs
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordUpdateSubscriptionResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordUpdateSubscriptionResponse](apiResponse)
 }
 
 // StopRecordV2 V2版本停止录制任务
@@ -168,7 +168,7 @@ func (s *cloudRecordService) StopRecordV2(request *CloudRecordStopRequestV2) (*R
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordStopResponse](apiResponse)
+	return ConvertToRtcResult[*CloudRecordStopResponse](apiResponse)
 }
 
 // StopRecordV3 V3版本停止录制任务
@@ -187,50 +187,5 @@ func (s *cloudRecordService) StopRecordV3(request *CloudRecordStopRequestV3) (*R
 		return nil, err
 	}
 
-	return convertToRtcResult[*CloudRecordStopResponse](apiResponse)
-}
-
-// convertToRtcResult 将YunxinApiResponse转换为RtcResult[T]
-func convertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[T], error) {
-	httpCode := apiResponse.GetHttpCode()
-	code := 0
-	requestId := ""
-	msg := ""
-	var rtcResponse T
-
-	defer func() {
-		if r := recover(); r != nil {
-			msg = apiResponse.GetData()
-		}
-	}()
-
-	var jsonObj map[string]interface{}
-	if err := json.Unmarshal([]byte(apiResponse.GetData()), &jsonObj); err == nil {
-		if codeVal, ok := jsonObj["code"]; ok {
-			if codeFloat, ok := codeVal.(float64); ok {
-				code = int(codeFloat)
-			}
-		}
-
-		if requestIdVal, ok := jsonObj["requestId"]; ok {
-			if requestIdStr, ok := requestIdVal.(string); ok {
-				requestId = requestIdStr
-			}
-		}
-
-		if errmsgVal, ok := jsonObj["errmsg"]; ok {
-			if errmsgStr, ok := errmsgVal.(string); ok {
-				msg = errmsgStr
-			}
-		}
-
-		// 解析响应对象
-		if err := json.Unmarshal([]byte(apiResponse.GetData()), &rtcResponse); err != nil {
-			msg = apiResponse.GetData()
-		}
-	} else {
-		msg = apiResponse.GetData()
-	}
-
-	return NewRtcResult(apiResponse.GetEndpoint(), code, httpCode, requestId, apiResponse.GetTraceId(), msg, rtcResponse), nil
+	return ConvertToRtcResult[*CloudRecordStopResponse](apiResponse)
 }

@@ -33,7 +33,7 @@ func (s *rtcRoomService) CreateRoom(request *RtcCreateRoomRequest) (*RtcResult[*
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcCreateRoomResponse](apiResponse)
+	return ConvertToRtcResult[*RtcCreateRoomResponse](apiResponse)
 }
 
 // GetRoomByCid 根据CID获取房间信息
@@ -47,7 +47,7 @@ func (s *rtcRoomService) GetRoomByCid(request *RtcGetRoomByCidRequest) (*RtcResu
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcGetRoomResponse](apiResponse)
+	return ConvertToRtcResult[*RtcGetRoomResponse](apiResponse)
 }
 
 // GetRoomByCname 根据CNAME获取房间信息
@@ -61,7 +61,7 @@ func (s *rtcRoomService) GetRoomByCname(request *RtcGetRoomByCnameRequest) (*Rtc
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcGetRoomResponse](apiResponse)
+	return ConvertToRtcResult[*RtcGetRoomResponse](apiResponse)
 }
 
 // ListRoomMembersV2 V2版本列出房间成员
@@ -86,7 +86,7 @@ func (s *rtcRoomService) ListRoomMembersV2(request *RtcListRoomMembersRequestV2)
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcListRoomMembersResponse](apiResponse)
+	return ConvertToRtcResult[*RtcListRoomMembersResponse](apiResponse)
 }
 
 // ListRoomMembersV3 V3版本列出房间成员
@@ -108,7 +108,7 @@ func (s *rtcRoomService) ListRoomMembersV3(request *RtcListRoomMembersRequestV3)
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcListRoomMembersResponse](apiResponse)
+	return ConvertToRtcResult[*RtcListRoomMembersResponse](apiResponse)
 }
 
 // AddMemberToKicklistV2 V2版本添加成员到踢出列表
@@ -129,7 +129,7 @@ func (s *rtcRoomService) AddMemberToKicklistV2(request *RtcAddMemberToKicklistRe
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcAddMemberToKicklistResponse](apiResponse)
+	return ConvertToRtcResult[*RtcAddMemberToKicklistResponse](apiResponse)
 }
 
 // AddMemberToKicklistV3 V3版本添加成员到踢出列表
@@ -148,7 +148,7 @@ func (s *rtcRoomService) AddMemberToKicklistV3(request *RtcAddMemberToKicklistRe
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcAddMemberToKicklistResponse](apiResponse)
+	return ConvertToRtcResult[*RtcAddMemberToKicklistResponse](apiResponse)
 }
 
 // DeleteRoomV2 V2版本删除房间
@@ -162,7 +162,7 @@ func (s *rtcRoomService) DeleteRoomV2(request *RtcDeleteRoomRequestV2) (*RtcResu
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
+	return ConvertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
 }
 
 // DeleteRoomV3 V3版本删除房间
@@ -176,50 +176,5 @@ func (s *rtcRoomService) DeleteRoomV3(request *RtcDeleteRoomRequestV3) (*RtcResu
 		return nil, err
 	}
 
-	return convertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
-}
-
-// convertToRtcResult 将YunxinApiResponse转换为RtcResult[T]
-func convertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[T], error) {
-	httpCode := apiResponse.GetHttpCode()
-	code := 0
-	requestId := ""
-	msg := ""
-	var rtcResponse T
-
-	defer func() {
-		if r := recover(); r != nil {
-			msg = apiResponse.GetData()
-		}
-	}()
-
-	var jsonObj map[string]interface{}
-	if err := json.Unmarshal([]byte(apiResponse.GetData()), &jsonObj); err == nil {
-		if codeVal, ok := jsonObj["code"]; ok {
-			if codeFloat, ok := codeVal.(float64); ok {
-				code = int(codeFloat)
-			}
-		}
-
-		if requestIdVal, ok := jsonObj["requestId"]; ok {
-			if requestIdStr, ok := requestIdVal.(string); ok {
-				requestId = requestIdStr
-			}
-		}
-
-		if errmsgVal, ok := jsonObj["errmsg"]; ok {
-			if errmsgStr, ok := errmsgVal.(string); ok {
-				msg = errmsgStr
-			}
-		}
-
-		// 解析响应对象
-		if err := json.Unmarshal([]byte(apiResponse.GetData()), &rtcResponse); err != nil {
-			msg = apiResponse.GetData()
-		}
-	} else {
-		msg = apiResponse.GetData()
-	}
-
-	return NewRtcResult(apiResponse.GetEndpoint(), code, httpCode, requestId, apiResponse.GetTraceId(), msg, rtcResponse), nil
+	return ConvertToRtcResult[*RtcDeleteRoomResponse](apiResponse)
 }

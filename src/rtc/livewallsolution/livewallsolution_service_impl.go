@@ -32,7 +32,7 @@ func (s *livewallSolutionServiceImpl) CreateTask(req *CreateTaskRequest) (*RtcRe
 		return nil, err
 	}
 
-	return convertToRtcResult[*CreateTaskResponse](apiResponse)
+	return ConvertToRtcResult[*CreateTaskResponse](apiResponse)
 }
 
 // StopTask 停止安全通审核任务
@@ -47,7 +47,7 @@ func (s *livewallSolutionServiceImpl) StopTask(req *StopTaskRequest) (*RtcResult
 		return nil, err
 	}
 
-	return convertToRtcResult[*StopTaskResponse](apiResponse)
+	return ConvertToRtcResult[*StopTaskResponse](apiResponse)
 }
 
 // QueryImage 查询审核视频截图
@@ -62,7 +62,7 @@ func (s *livewallSolutionServiceImpl) QueryImage(req *QueryImageRequest) (*RtcRe
 		return nil, err
 	}
 
-	return convertToRtcResult[*QueryImageResponse](apiResponse)
+	return ConvertToRtcResult[*QueryImageResponse](apiResponse)
 }
 
 // QueryAudioTask 查询审核音频断句
@@ -77,50 +77,5 @@ func (s *livewallSolutionServiceImpl) QueryAudioTask(req *QueryAudioTaskRequest)
 		return nil, err
 	}
 
-	return convertToRtcResult[*QueryAudioTaskResponse](apiResponse)
-}
-
-// convertToRtcResult 将YunxinApiResponse转换为RtcResult[T]
-func convertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[T], error) {
-	httpCode := apiResponse.GetHttpCode()
-	code := 0
-	requestId := ""
-	msg := ""
-	var rtcResponse T
-
-	defer func() {
-		if r := recover(); r != nil {
-			msg = apiResponse.GetData()
-		}
-	}()
-
-	var jsonObj map[string]interface{}
-	if err := json.Unmarshal([]byte(apiResponse.GetData()), &jsonObj); err == nil {
-		if codeVal, ok := jsonObj["code"]; ok {
-			if codeFloat, ok := codeVal.(float64); ok {
-				code = int(codeFloat)
-			}
-		}
-
-		if requestIdVal, ok := jsonObj["requestId"]; ok {
-			if requestIdStr, ok := requestIdVal.(string); ok {
-				requestId = requestIdStr
-			}
-		}
-
-		if errmsgVal, ok := jsonObj["errmsg"]; ok {
-			if errmsgStr, ok := errmsgVal.(string); ok {
-				msg = errmsgStr
-			}
-		}
-
-		// 解析响应对象
-		if err := json.Unmarshal([]byte(apiResponse.GetData()), &rtcResponse); err != nil {
-			msg = apiResponse.GetData()
-		}
-	} else {
-		msg = apiResponse.GetData()
-	}
-
-	return NewRtcResult(apiResponse.GetEndpoint(), code, httpCode, requestId, apiResponse.GetTraceId(), msg, rtcResponse), nil
+	return ConvertToRtcResult[*QueryAudioTaskResponse](apiResponse)
 }

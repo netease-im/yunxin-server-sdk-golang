@@ -5,6 +5,7 @@ import (
 	"github.com/netease-im/yunxin-server-sdk-golang/src/rtc/cloud_record"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/rtc/livewallsolution"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/rtc/room"
+	"github.com/netease-im/yunxin-server-sdk-golang/src/rtc/rtmp_task"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/rtc/task"
 )
 
@@ -14,6 +15,7 @@ type YunxinRtcApiServices struct {
 	rtcCloudRecordService      cloud_record.CloudRecordService
 	rtcTaskService             task.RtcTaskService
 	rtcLivewallSolutionService livewallsolution.LivewallSolutionService
+	rtcRtmpTaskService         rtmp_task.RtmpTaskService
 }
 
 // NewYunxinRtcApiServices 创建云信RTC API服务实例
@@ -23,6 +25,7 @@ func NewYunxinRtcApiServices(yunxinApiHttpClient core.YunxinApiHttpClient) *Yunx
 		rtcCloudRecordService:      cloud_record.NewCloudRecordService(yunxinApiHttpClient),
 		rtcTaskService:             task.NewRtcTaskService(yunxinApiHttpClient),
 		rtcLivewallSolutionService: livewallsolution.NewLivewallSolutionService(yunxinApiHttpClient),
+		rtcRtmpTaskService:         rtmp_task.NewRtmpTaskService(yunxinApiHttpClient),
 	}
 }
 
@@ -44,4 +47,9 @@ func (s *YunxinRtcApiServices) GetRtcTaskService() task.RtcTaskService {
 // GetLivewallSolutionService 获取安全通服务
 func (s *YunxinRtcApiServices) GetLivewallSolutionService() livewallsolution.LivewallSolutionService {
 	return s.rtcLivewallSolutionService
+}
+
+// GetRtmpTaskService 获取RTC旁路推流任务服务
+func (s *YunxinRtcApiServices) GetRtmpTaskService() rtmp_task.RtmpTaskService {
+	return s.rtcRtmpTaskService
 }
