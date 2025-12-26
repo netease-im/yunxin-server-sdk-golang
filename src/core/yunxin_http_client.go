@@ -175,7 +175,10 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 		// 读取响应体
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil, err
+			// 读取响应体失败，记录错误并收集指标
+			c.updateEndpointSelector(yunxinEndpoint, endpoint.OTHER_ERRORS)
+			c.collectMetrics(yunxinEndpoint, method, contextType, apiVersion, uri, "read_body_error", startTime)
+			return nil, fmt.Errorf("failed to read response body: %w", err)
 		}
 
 		httpCode := resp.StatusCode
@@ -186,8 +189,9 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 			requestResult := c.classifyHttpError(httpCode)
 			c.updateEndpointSelector(yunxinEndpoint, requestResult)
 			c.collectMetrics(yunxinEndpoint, method, contextType, apiVersion, uri, fmt.Sprintf("http_code_%d", httpCode), startTime)
+
 			if !c.biz.HttpCodeAlways200 {
-				c.updateEndpointSelector(yunxinEndpoint, c.classifyHttpError(httpCode))
+				// 业务允许非200状态码，直接返回响应
 				return http.NewHttpResponse(yunxinEndpoint, httpCode, bodyString, traceId), nil
 			}
 
@@ -208,6 +212,9 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 
 			// 是否切换端点
 			if retryAction.IsNextEndpoint() {
+				if excludeEndpoints == nil {
+					excludeEndpoints = make(map[string]bool)
+				}
 				excludeEndpoints[yunxinEndpoint] = true
 				yunxinEndpoint, _ = c.selectNextEndpoint(excludeEndpoints)
 			}
@@ -230,7 +237,7 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 }
 
 func (c *yunxinHttpClientImpl) GetStats() *metrics.Stats {
-	if !c.running {
+	if !c.isRunning() {
 		return nil
 	}
 
@@ -242,8 +249,14 @@ func (c *yunxinHttpClientImpl) GetStats() *metrics.Stats {
 }
 
 func (c *yunxinHttpClientImpl) Close() error {
+	// 设置运行状态为false
+	c.setRunning(false)
 	// 关闭HTTP客户端连接池
 	c.httpClient.CloseIdleConnections()
+	// 停止metrics收集器
+	if c.metricsCollector != nil {
+		c.metricsCollector.Shutdown()
+	}
 	return nil
 }
 
