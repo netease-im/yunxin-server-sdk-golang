@@ -12,11 +12,12 @@ type TaskCreateRequest struct {
 // TaskData 云端播放任务数据
 type TaskData struct {
 	StreamUrl   string `json:"streamUrl"`             // 点播或者直播流地址(支持 RTMP、HLS、HTTP-FLV、HTTPS-FLV 协议的直播流,支持FLV、MP4、MPEG-TS、Matroska(MKV)、MP3、wav格式的点播文件)
-	Token       string `json:"token,omitempty"`       // 用于鉴权的安全认证签名(Token)
 	Uid         uint64 `json:"uid"`                   // 云端播放器在房间内的用户ID
 	IdleTimeout int    `json:"idleTimeout,omitempty"` // 云端播放器处于空闲状态的最大时长,单位为秒(s),超时后自动销毁
 	PlayTs      int64  `json:"playTs,omitempty"`      // 云端播放器开始播放在线媒体流时的Unix时间戳,单位为秒(s)
 	MediaType   int    `json:"mediaType"`             // 播放流的媒体类型: 0-音频, 1-视频, 2-音视频
+	Volume      int    `json:"volume,omitempty"`      // 设置音量大小，取值范围为 [0,200]
+	RepeatTime  int    `json:"repeatTime,omitempty"`  // 重复播放次数，默认为 1 次，若此参数传 -1，表示无限循环播放，直到任务停止
 }
 
 // TaskUpdateRequestV2 V2版本更新云端播放任务请求
