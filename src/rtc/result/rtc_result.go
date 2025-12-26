@@ -53,22 +53,14 @@ func ConvertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[
 
 	var jsonObj map[string]interface{}
 	if err := json.Unmarshal([]byte(apiResponse.GetData()), &jsonObj); err == nil {
-		if codeVal, ok := jsonObj["code"]; ok {
-			if codeFloat, ok := codeVal.(float64); ok {
-				code = int(codeFloat)
-			}
-		}
-
-		if requestIdVal, ok := jsonObj["requestId"]; ok {
-			if requestIdStr, ok := requestIdVal.(string); ok {
-				requestId = requestIdStr
-			}
-		}
-
-		if errmsgVal, ok := jsonObj["errmsg"]; ok {
-			if errmsgStr, ok := errmsgVal.(string); ok {
-				msg = errmsgStr
-			}
+		// 获取返回码
+		code = getIntFromMap(jsonObj, "code")
+		// 获取请求ID
+		requestId = getStringFromMap(jsonObj, "requestId")
+		// 尝试获取错误消息，优先使用errmsg，其次使用msg
+		msg = getStringFromMap(jsonObj, "errmsg")
+		if msg == "" {
+			msg = getStringFromMap(jsonObj, "msg")
 		}
 
 		// 解析响应对象
@@ -80,4 +72,29 @@ func ConvertToRtcResult[T any](apiResponse *core.YunxinApiResponse) (*RtcResult[
 	}
 
 	return NewRtcResult(apiResponse.GetEndpoint(), code, httpCode, requestId, apiResponse.GetTraceId(), msg, rtcResponse), nil
+}
+
+// getStringFromMap 从map中安全获取字符串值
+func getStringFromMap(m map[string]interface{}, key string) string {
+	if val, ok := m[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
+}
+
+// getIntFromMap 从map中安全获取整数值（支持float64转int）
+func getIntFromMap(m map[string]interface{}, key string) int {
+	if val, ok := m[key]; ok {
+		switch v := val.(type) {
+		case float64:
+			return int(v)
+		case int:
+			return v
+		case int64:
+			return int(v)
+		}
+	}
+	return 0
 }
