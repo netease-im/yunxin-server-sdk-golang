@@ -111,16 +111,10 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 
 	// 获取重试策略
 	retryPolicy := c.endpointConfig.RetryPolicy
-	maxRetry := retryPolicy.MaxRetry()
-	if maxRetry <= 0 {
-		maxRetry = 0
-	}
-	if maxRetry > 128 {
-		maxRetry = 128
-	}
+	maxRetry := limitRange(retryPolicy.MaxRetry(), 0, 128)
 
-	// 获取HTTP客户端
-	httpClient := c.httpClient
+	// 获取HTTP客户端，暂不支持自定义超时
+	httpClient := c.getHttpClient(nil)
 
 	var lastError error
 	var excludeEndpoints map[string]bool
@@ -141,7 +135,7 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 		startTime := time.Now()
 
 		// 记录日志
-		c.logDebug("execute", executeContext, queryParams, data)
+		c.logDebug("execute", executeContext)
 
 		// 发送HTTP请求
 		resp, err := httpClient.Do(req)
@@ -214,9 +208,6 @@ func (c *yunxinHttpClientImpl) Execute(method http.HttpMethod, contextType http.
 
 			// 是否切换端点
 			if retryAction.IsNextEndpoint() {
-				if excludeEndpoints == nil {
-					excludeEndpoints = make(map[string]bool)
-				}
 				excludeEndpoints[yunxinEndpoint] = true
 				yunxinEndpoint, _ = c.selectNextEndpoint(excludeEndpoints)
 			}
@@ -370,11 +361,11 @@ func (c *yunxinHttpClientImpl) buildRequest(method http.HttpMethod, contextType 
 }
 
 // logDebug 记录调试日志
-func (c *yunxinHttpClientImpl) logDebug(action string, executeContext base.ExecuteContext, queryParams map[string]string, data string) {
+func (c *yunxinHttpClientImpl) logDebug(action string, executeContext base.ExecuteContext) {
 	logrus.Debugf("%s, bizName=%s, endpoint=%s, method=%s, contextType=%s, apiVersion=%s, uri=%s, path=%s, traceId=%s, queryParams=%v, data=%s",
 		action, executeContext.Biz.Name, executeContext.Endpoint, executeContext.HttpMethod.String(),
 		executeContext.ContextType.String(), executeContext.ApiVersion.String(), executeContext.Uri,
-		executeContext.Path, executeContext.TraceId, queryParams, data)
+		executeContext.Path, executeContext.TraceId, executeContext.QueryParams, executeContext.Data)
 }
 
 // classifyError 分类错误
@@ -407,4 +398,15 @@ func (c *yunxinHttpClientImpl) collectMetrics(endpoint string, method http.HttpM
 		duration := time.Since(startTime).Milliseconds()
 		c.metricsCollector.Collect(endpoint, method, contextType, apiVersion, uri, result, duration)
 	}
+}
+
+func limitRange(value, min, max int) int {
+	if value < min {
+		value = min
+	}
+	if value > max {
+		value = max
+	}
+
+	return value
 }
