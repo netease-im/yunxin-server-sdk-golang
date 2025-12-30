@@ -344,7 +344,7 @@ func (c *yunxinHttpClientImpl) addHeaders(req *nethttp.Request, apiVersion trace
 	}
 
 	// User-Agent
-	req.Header.Set("User-Agent", "yunxin-server-sdk/"+version.YunxinApiSdkVersion)
+	req.Header.Set("User-Agent", "yunxin-server-sdk-golang/"+version.YunxinApiSdkVersion)
 }
 
 // buildRequest 重新定义构建HTTP请求（增加ContextType支持）
