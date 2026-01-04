@@ -23,10 +23,13 @@ type CloudRecordUpdateLayoutResponse struct {
 
 // CloudRecordQueryTaskResponse 查询云端录制任务响应
 type CloudRecordQueryTaskResponse struct {
-	Record    *RecordInfo `json:"record"`    // 录制信息
-	Code      int         `json:"code"`      // 状态码
-	RequestId string      `json:"requestId"` // 请求ID
-	Errmsg    string      `json:"errmsg"`    // 错误信息
+	Record struct {
+		Cid    int64        `json:"cid"`    // 房间ID
+		Record []RecordInfo `json:"record"` // 录制信息
+	} `json:"record"` // 录制信息
+	Code      int    `json:"code"`      // 状态码
+	RequestId string `json:"requestId"` // 请求ID
+	Errmsg    string `json:"errmsg"`    // 错误信息
 }
 
 // RecordInfo 录制信息
