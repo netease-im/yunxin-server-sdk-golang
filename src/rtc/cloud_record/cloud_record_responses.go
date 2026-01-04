@@ -2,10 +2,12 @@ package cloud_record
 
 // CloudRecordCreateResponse 创建云端录制任务响应
 type CloudRecordCreateResponse struct {
-	TaskId    string `json:"taskId"`    // 任务ID
-	Code      int    `json:"code"`      // 状态码
 	RequestId string `json:"requestId"` // 请求ID
 	Errmsg    string `json:"errmsg"`    // 错误信息
+	Record    struct {
+		TaskId string `json:"taskId"` // 任务ID
+		Cid    int64  `json:"cid"`    // 房间ID
+	} `json:"record"`
 }
 
 // CloudRecordUpdateLayoutResponse 更新录制布局响应
@@ -13,6 +15,10 @@ type CloudRecordUpdateLayoutResponse struct {
 	Code      int    `json:"code"`      // 状态码
 	RequestId string `json:"requestId"` // 请求ID
 	Errmsg    string `json:"errmsg"`    // 错误信息
+	Record    struct {
+		TaskId string `json:"taskId"` // 任务ID
+		Cid    int64  `json:"cid"`    // 房间ID
+	} `json:"record"`
 }
 
 // CloudRecordQueryTaskResponse 查询云端录制任务响应
