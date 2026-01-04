@@ -31,13 +31,13 @@ type CloudRecordQueryTaskResponse struct {
 
 // RecordInfo 录制信息
 type RecordInfo struct {
-	Status       int           `json:"status"`                 // 录制状态: 0-未开始, 1-录制中, 2-已结束, 3-异常
-	TaskId       string        `json:"taskId"`                 // 任务ID
-	RecordId     string        `json:"recordId"`               // 录制ID
-	RecordConfig *RecordConfig `json:"recordConfig,omitempty"` // 录制配置
-	LayoutConfig *LayoutConfig `json:"layoutConfig,omitempty"` // 布局配置
-	Detect       *Detect       `json:"detect,omitempty"`       // 内容安全审核配置
-	Watermark    *Watermark    `json:"watermark,omitempty"`    // 水印配置
+	State           int              `json:"state"`                  // 录制状态: 0-未开始, 1-录制中, 2-已结束, 3-异常
+	TaskId          string           `json:"taskId"`                 // 任务ID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe"`        // 订阅信息
+	RecordConfig    *RecordConfig    `json:"recordConfig,omitempty"` // 录制配置
+	LayoutConfig    *LayoutConfig    `json:"layoutConfig,omitempty"` // 布局配置
+	Detect          *Detect          `json:"detect,omitempty"`       // 内容安全审核配置
+	Watermark       *Watermark       `json:"watermark,omitempty"`    // 水印配置
 }
 
 // CloudRecordUpdateSubscriptionResponse 更新订阅名单响应

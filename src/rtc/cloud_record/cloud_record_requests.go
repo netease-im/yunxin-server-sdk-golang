@@ -3,23 +3,38 @@ package cloud_record
 // CloudRecordCreateRequestV2 V2版本创建云端录制任务请求
 // See https://doc.yunxin.163.com/nertc/server-apis/TEyOTk2OTY?platform=server
 type CloudRecordCreateRequestV2 struct {
-	Cid          int64         `json:"cid"`                    // 房间ID
-	Uid          uint64        `json:"uid,omitempty"`          // 录制机器人UID
-	RecordConfig *RecordConfig `json:"recordConfig,omitempty"` // 录制配置
-	Detect       *Detect       `json:"detect,omitempty"`       // 内容安全审核配置
-	LayoutConfig *LayoutConfig `json:"layoutConfig,omitempty"` // 录制布局配置
-	Watermark    *Watermark    `json:"watermark,omitempty"`    // 水印配置
+	Cid             int64            `json:"cid"`                       // 房间ID
+	Uid             uint64           `json:"uid,omitempty"`             // 录制机器人UID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
+	RecordConfig    *RecordConfig    `json:"recordConfig,omitempty"`    // 录制配置
+	Detect          *Detect          `json:"detect,omitempty"`          // 内容安全审核配置
+	LayoutConfig    *LayoutConfig    `json:"layoutConfig,omitempty"`    // 录制布局配置
+	Watermark       *Watermark       `json:"watermark,omitempty"`       // 水印配置
 }
 
 // CloudRecordCreateRequestV3 V3版本创建云端录制任务请求
 // See https://doc.yunxin.163.com/nertc/server-apis/TEyOTk2OTY?platform=server
 type CloudRecordCreateRequestV3 struct {
-	Cname        string        `json:"cname"`                  // 房间名称
-	Uid          uint64        `json:"uid,omitempty"`          // 录制机器人UID
-	RecordConfig *RecordConfig `json:"recordConfig,omitempty"` // 录制配置
-	Detect       *Detect       `json:"detect,omitempty"`       // 内容安全审核配置
-	LayoutConfig *LayoutConfig `json:"layoutConfig,omitempty"` // 录制布局配置
-	Watermark    *Watermark    `json:"watermark,omitempty"`    // 水印配置
+	Cname           string           `json:"cname"`                     // 房间名称
+	Uid             uint64           `json:"uid,omitempty"`             // 录制机器人UID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
+	RecordConfig    *RecordConfig    `json:"recordConfig,omitempty"`    // 录制配置
+	Detect          *Detect          `json:"detect,omitempty"`          // 内容安全审核配置
+	LayoutConfig    *LayoutConfig    `json:"layoutConfig,omitempty"`    // 录制布局配置
+	Watermark       *Watermark       `json:"watermark,omitempty"`       // 水印配置
+}
+
+// 订阅信息
+type StreamSubscribe struct {
+	StreamType   int `json:"streamType"` // 流类型: 0-音视频, 1-辅流
+	AudioUidList struct {
+		SubscribeUids   []uint64 `json:"subscribeUids"`   // 订阅白名单
+		UnSubscribeUids []uint64 `json:"unSubscribeUids"` // 订阅黑名单
+	} `json:"audioUidList"` // 音频订阅名单，可指定黑名单或白名单
+	VideoUidList struct {
+		SubscribeUids   []uint64 `json:"subscribeUids"`   // 订阅白名单
+		UnSubscribeUids []uint64 `json:"unSubscribeUids"` // 订阅黑名单
+	} `json:"videoUidList"` // 视频订阅名单，可指定黑名单或白名单
 }
 
 // RecordConfig 录制配置
@@ -115,17 +130,25 @@ type ImageWatermark struct {
 // CloudRecordUpdateLayoutRequestV2 V2版本更新录制布局请求
 // See https://doc.yunxin.163.com/nertc/server-apis/DUyOTg1NDI?platform=server
 type CloudRecordUpdateLayoutRequestV2 struct {
-	Cid          int64         `json:"cid"`                    // 房间ID
-	TaskId       string        `json:"taskId"`                 // 任务ID
-	LayoutConfig *LayoutConfig `json:"layoutConfig,omitempty"` // 录制布局配置
+	Cid             int64            `json:"cid"`                       // 房间ID
+	TaskId          string           `json:"taskId"`                    // 任务ID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
+	RecordConfig    *RecordConfig    `json:"recordConfig,omitempty"`    // 录制配置
+	Detect          *Detect          `json:"detect,omitempty"`          // 内容安全审核配置
+	LayoutConfig    *LayoutConfig    `json:"layoutConfig,omitempty"`    // 录制布局配置
+	Watermark       *Watermark       `json:"watermark,omitempty"`       // 水印配置
 }
 
 // CloudRecordUpdateLayoutRequestV3 V3版本更新录制布局请求
 // See https://doc.yunxin.163.com/nertc/server-apis/DUyOTg1NDI?platform=server
 type CloudRecordUpdateLayoutRequestV3 struct {
-	Cname        string        `json:"cname"`                  // 房间名称
-	TaskId       string        `json:"taskId"`                 // 任务ID
-	LayoutConfig *LayoutConfig `json:"layoutConfig,omitempty"` // 录制布局配置
+	Cname           string           `json:"cname"`                     // 房间名称
+	TaskId          string           `json:"taskId"`                    // 任务ID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
+	RecordConfig    *RecordConfig    `json:"recordConfig,omitempty"`    // 录制配置
+	Detect          *Detect          `json:"detect,omitempty"`          // 内容安全审核配置
+	LayoutConfig    *LayoutConfig    `json:"layoutConfig,omitempty"`    // 录制布局配置
+	Watermark       *Watermark       `json:"watermark,omitempty"`       // 水印配置
 }
 
 // CloudRecordQueryTaskRequestV2 V2版本查询云端录制任务请求
@@ -145,19 +168,17 @@ type CloudRecordQueryTaskRequestV3 struct {
 // CloudRecordUpdateSubscriptionRequestV2 V2版本更新订阅名单请求
 // See https://doc.yunxin.163.com/nertc/server-apis/Tg5OTI0ODA?platform=server
 type CloudRecordUpdateSubscriptionRequestV2 struct {
-	Cid    int64       `json:"cid"`            // 房间ID
-	TaskId string      `json:"taskId"`         // 任务ID
-	Subs   []SubStream `json:"subs,omitempty"` // 订阅名单
-	Mode   int         `json:"mode,omitempty"` // 订阅模式: 0-白名单, 1-黑名单
+	Cid             int64            `json:"cid"`                       // 房间ID
+	TaskId          string           `json:"taskId"`                    // 任务ID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
 }
 
 // CloudRecordUpdateSubscriptionRequestV3 V3版本更新订阅名单请求
 // See https://doc.yunxin.163.com/nertc/server-apis/Tg5OTI0ODA?platform=server
 type CloudRecordUpdateSubscriptionRequestV3 struct {
-	Cname  string      `json:"cname"`          // 房间名称
-	TaskId string      `json:"taskId"`         // 任务ID
-	Subs   []SubStream `json:"subs,omitempty"` // 订阅名单
-	Mode   int         `json:"mode,omitempty"` // 订阅模式: 0-白名单, 1-黑名单
+	Cname           string           `json:"cname"`                     // 房间名称
+	TaskId          string           `json:"taskId"`                    // 任务ID
+	StreamSubscribe *StreamSubscribe `json:"streamSubscribe,omitempty"` // 订阅信息
 }
 
 // CloudRecordStopRequestV2 V2版本停止录制任务请求
