@@ -165,11 +165,12 @@ func (s *rtmpTaskService) DeleteRtmpTaskV2(request *RtmpTaskDeleteRequestV2) (*R
 		"cid": strconv.FormatInt(request.Cid, 10),
 	}
 
-	queryString := map[string]string{
-		"taskId": request.TaskId,
+	requestData, err := json.Marshal(request)
+	if err != nil {
+		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRtmpTaskV2, pathParams, queryString, "")
+	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRtmpTaskV2, pathParams, nil, string(requestData))
 	if err != nil {
 		return nil, err
 	}
@@ -179,13 +180,17 @@ func (s *rtmpTaskService) DeleteRtmpTaskV2(request *RtmpTaskDeleteRequestV2) (*R
 
 // DeleteRtmpTaskV3 V3版本停止旁路推流任务
 func (s *rtmpTaskService) DeleteRtmpTaskV3(request *RtmpTaskDeleteRequestV3) (*RtcResult[*RtmpTaskDeleteResponse], error) {
-	// V3版本: cname和taskId作为查询参数
+	// V3版本: cname作为查询参数
 	queryString := map[string]string{
-		"cname":  request.Cname,
-		"taskId": request.TaskId,
+		"cname": request.Cname,
 	}
 
-	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRtmpTaskV3, nil, queryString, "")
+	requestData, err := json.Marshal(request)
+	if err != nil {
+		return nil, err
+	}
+
+	apiResponse, err := s.httpClient.ExecuteJson(http.DELETE, DeleteRtmpTaskV3, nil, queryString, string(requestData))
 	if err != nil {
 		return nil, err
 	}
