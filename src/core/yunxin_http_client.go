@@ -351,11 +351,9 @@ func (c *yunxinHttpClientImpl) addHeaders(req *nethttp.Request, apiVersion trace
 func (c *yunxinHttpClientImpl) buildRequest(method http.HttpMethod, contextType http.ContextType, url string, data string) (*nethttp.Request, error) {
 	var body io.Reader
 
-	// 处理请求体
-	if method == http.POST || method == http.PUT || method == http.PATCH {
-		if data != "" {
-			body = strings.NewReader(data)
-		}
+	// 处理请求体：对于支持请求体的HTTP方法，设置请求体和Content-Type
+	if data != "" && isMethodWithBody(method) {
+		body = strings.NewReader(data)
 	}
 
 	req, err := nethttp.NewRequest(method.String(), url, body)
@@ -363,14 +361,17 @@ func (c *yunxinHttpClientImpl) buildRequest(method http.HttpMethod, contextType 
 		return nil, err
 	}
 
-	// 根据ContextType设置Content-Type
-	if method == http.POST || method == http.PUT || method == http.PATCH {
-		if data != "" {
-			req.Header.Set("Content-Type", contextType.GetValue())
-		}
+	// 设置Content-Type
+	if body != nil {
+		req.Header.Set("Content-Type", contextType.GetValue())
 	}
 
 	return req, nil
+}
+
+// isMethodWithBody 判断HTTP方法是否支持请求体
+func isMethodWithBody(method http.HttpMethod) bool {
+	return method == http.POST || method == http.PUT || method == http.PATCH || method == http.DELETE
 }
 
 // logDebug 记录调试日志
