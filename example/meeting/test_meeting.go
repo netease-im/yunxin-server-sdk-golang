@@ -50,7 +50,7 @@ func testCreateMeetingAccountWithSDK(client core.YunxinApiHttpClient) {
 	userUuid := example.GenerateUuidWithoutDash()
 	request := &user.CreateMeetingAccountRequest{
 		UserUuid: userUuid,
-		Username: "zhangsan",
+		Name:     "zhangsan",
 	}
 
 	result, err := meetingUserService.CreateAccount(request)
