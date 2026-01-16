@@ -2,9 +2,14 @@ package user
 
 // CreateMeetingAccountRequest 创建会议账号请求
 type CreateMeetingAccountRequest struct {
-	UserUuid   string `json:"userUuid"`             // 用户UUID，全局唯一
-	Username   string `json:"username"`             // 用户名
-	Avatar     string `json:"avatar,omitempty"`     // 用户头像URL
-	Role       int    `json:"role,omitempty"`       // 用户角色，可选
-	ExpireTime int64  `json:"expireTime,omitempty"` // 账号过期时间戳，可选
+	UserUuid                string   `json:"userUuid"`
+	ImToken                 string   `json:"imToken"`
+	Name                    string   `json:"name"`
+	ShortMeetingNum         string   `json:"shortMeetingNum"`
+	SipCid                  string   `json:"sipCid"`
+	Avatar                  string   `json:"avatar"`
+	PhoneNumber             string   `json:"phoneNumber"`
+	Email                   string   `json:"email"`
+	ReturnGeneratedPassword bool     `json:"returnGeneratedPassword"`
+	Departments             []string `json:"departments"`
 }
