@@ -4,6 +4,10 @@
 ![GitHub release](https://img.shields.io/github/release/netease-im/yunxin-im-server-sdk.svg)
 ![java_language](https://img.shields.io/badge/java--language-1.8-blue.svg)
 
+## 发布状态说明
+* 当前版本为beta版，im的封装接口未经完整测试，不建议在生产环境使用
+* 使用im的封装接口出现生产环境问题，风险需要自行承担
+
 ## 核心特性
 
 * 封装了云信服务器api的sdk

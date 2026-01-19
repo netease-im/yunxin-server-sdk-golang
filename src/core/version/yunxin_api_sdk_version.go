@@ -2,5 +2,5 @@ package version
 
 // YunxinApiSdkVersion 云信API SDK版本
 const (
-	YunxinApiSdkVersion = "1.2.0" // SDK版本号
+	YunxinApiSdkVersion = "v1.0.0-beta.18" // SDK版本号
 )
