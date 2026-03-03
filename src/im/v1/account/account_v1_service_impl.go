@@ -261,7 +261,7 @@ func (a *AccountV1ServiceImpl) QueryUserInfos(req *QueryUserInfosRequestV1) (*co
 		accidsJson, _ := json.Marshal(req.Accids)
 		paramMap["accids"] = string(accidsJson)
 	}
-	if req.MuteStatus {
+	if req.MuteStatus != nil && *req.MuteStatus {
 		paramMap["muteStatus"] = "true"
 	}
 

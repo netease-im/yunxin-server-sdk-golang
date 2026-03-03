@@ -46,10 +46,10 @@ func (c *ChatroomV2ServiceImpl) GetChatroomInfo(req *GetChatroomInfoRequestV2) (
 	}
 
 	queryParams := make(map[string]string)
-	if req.NeedOnlineUserCount {
+	if req.NeedOnlineUserCount != nil && *req.NeedOnlineUserCount {
 		queryParams["need_online_user_count"] = "true"
 	}
-	if req.OnlineUserCountByType {
+	if req.OnlineUserCountByType != nil && *req.OnlineUserCountByType {
 		queryParams["online_user_count_by_type"] = "true"
 	}
 
@@ -109,12 +109,12 @@ func (c *ChatroomV2ServiceImpl) GetChatroomAddress(req *GetChatroomAddressReques
 		"client_ip":  req.ClientIp,
 	}
 
-	if req.ClientType > 0 {
-		queryParams["client_type"] = strconv.Itoa(req.ClientType)
+	if req.ClientType != nil && *req.ClientType > 0 {
+		queryParams["client_type"] = strconv.Itoa(*req.ClientType)
 	}
 
-	if req.IpType > 0 {
-		queryParams["ip_type"] = strconv.Itoa(req.IpType)
+	if req.IpType != nil && *req.IpType > 0 {
+		queryParams["ip_type"] = strconv.Itoa(*req.IpType)
 	}
 
 	apiResponse, err := c.httpClient.ExecuteV2Api(http.GET, GetChatroomAddress, pathParams, queryParams, "")
@@ -193,7 +193,7 @@ func (c *ChatroomV2ServiceImpl) ToggleInOutNotification(req *ToggleInOutNotifica
 	}
 
 	queryParams := map[string]string{
-		"in_out_notification": fmt.Sprintf("%t", req.InOutNotification),
+		"in_out_notification": fmt.Sprintf("%t", *req.InOutNotification),
 	}
 
 	apiResponse, err := c.httpClient.ExecuteV2Api(http.PATCH, ToggleInOutNotification, pathParams, queryParams, "")

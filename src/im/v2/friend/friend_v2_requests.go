@@ -4,6 +4,7 @@ package friend
 type AddFriendRequestV2 struct {
 	AccountId         string `json:"account_id"`                   // 账号ID
 	FriendAccountId   string `json:"friend_account_id"`            // 好友账号ID
+	Type              int    `json:"type"`                         // 添加类型：1-直接添加，2-需要验证
 	Alias             string `json:"alias,omitempty"`              // 好友别名
 	Extension         string `json:"extension,omitempty"`          // 扩展字段
 	CustomerExtension string `json:"customer_extension,omitempty"` // 客户端扩展字段
@@ -12,9 +13,9 @@ type AddFriendRequestV2 struct {
 
 // DeleteFriendRequestV2 删除好友请求
 type DeleteFriendRequestV2 struct {
-	AccountId       string `json:"-"`                      // 账号ID，用于构造URL
-	FriendAccountId string `json:"friend_account_id"`      // 好友账号ID
-	DeleteAlias     bool   `json:"delete_alias,omitempty"` // 是否删除别名
+	AccountId       string `json:"-"` // 账号ID，用于构造URL
+	FriendAccountId string `json:"-"` // 好友账号ID，用于构造查询参数
+	DeleteAlias     *bool  `json:"-"` // 是否删除别名，用于构造查询参数
 }
 
 // UpdateFriendRequestV2 更新好友请求
@@ -43,9 +44,15 @@ type ListFriendsRequestV2 struct {
 type HandleFriendAdditionRequestV2 struct {
 	AccountId         string `json:"account_id"`                   // 账号ID
 	FriendAccountId   string `json:"friend_account_id"`            // 好友账号ID
+	Type              int    `json:"type"`                         // 处理类型：1-接受，2-拒绝
 	Alias             string `json:"alias,omitempty"`              // 好友别名
 	Extension         string `json:"extension,omitempty"`          // 扩展字段
 	CustomerExtension string `json:"customer_extension,omitempty"` // 客户端扩展字段
 	Postscript        string `json:"postscript,omitempty"`         // 附言
-	HandleType        int    `json:"handle_type"`                  // 处理类型：1-接受，2-拒绝
 }
+
+// Constants for HandleFriendAdditionRequestV2.Type
+const (
+	TypeAccept = 1 // 接受好友请求
+	TypeReject = 2 // 拒绝好友请求
+)

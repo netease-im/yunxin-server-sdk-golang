@@ -34,7 +34,7 @@ type FailedQuery struct {
 // SubscriptionDetail 订阅详情
 type SubscriptionDetail struct {
 	AccountId     string `json:"account_id"`     // 账号ID
-	EventType     int    `json:"event_type"`     // 事件类型
+	EventType     *int   `json:"event_type"`     // 事件类型
 	SubscribeTime int64  `json:"subscribe_time"` // 订阅时间
 	ExpireTime    int64  `json:"expire_time"`    // 过期时间
 }

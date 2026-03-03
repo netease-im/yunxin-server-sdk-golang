@@ -2,6 +2,7 @@ package users
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core/http"
@@ -19,7 +20,7 @@ func (s *UserV2ServiceImpl) UpdateUser(req *UpdateUserRequestV2) (*core.Result[*
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.PUT, UpdateUser, pathParams, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.PATCH, UpdateUser, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -43,12 +44,15 @@ func (s *UserV2ServiceImpl) GetUser(req *GetUserRequestV2) (*core.Result[*GetUse
 
 // BatchGetUsers 批量获取用户信息
 func (s *UserV2ServiceImpl) BatchGetUsers(req *BatchGetUsersRequestV2) (*core.Result[*BatchGetUsersResponseV2], error) {
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	// Convert the list of account IDs to a comma-separated string
+	accountIdsString := strings.Join(req.AccountIds, ",")
+
+	// Set up query parameters
+	queryParams := map[string]string{
+		"account_ids": accountIdsString,
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, BatchGetUsers, nil, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, BatchGetUsers, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}

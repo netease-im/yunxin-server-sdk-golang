@@ -4,6 +4,7 @@ package system_notification
 
 // SendAttachMsgResponseV1 SendAttachMsg响应
 type SendAttachMsgResponseV1 struct {
+	Desc string `json:"desc,omitempty"`
 }
 
 // SendBatchAttachMsgResponseV1 SendBatchAttachMsg响应

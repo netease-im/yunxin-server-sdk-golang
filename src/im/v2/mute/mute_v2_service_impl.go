@@ -49,12 +49,11 @@ func (m *MuteV2ServiceImpl) RemoveMuteContact(req *RemoveMuteContactRequestV2) (
 		"account_id": req.AccountId,
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"contact_account_id": req.ContactAccountId,
 	}
 
-	apiResponse, err := m.httpClient.ExecuteV2Api(http.DELETE, RemoveMuteContact, pathParams, nil, string(requestBody))
+	apiResponse, err := m.httpClient.ExecuteV2Api(http.DELETE, RemoveMuteContact, pathParams, queryParams, "")
 	if err != nil {
 		return nil, err
 	}

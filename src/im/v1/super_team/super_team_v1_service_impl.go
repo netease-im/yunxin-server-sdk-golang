@@ -2,6 +2,7 @@ package super_team
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core/utils"
@@ -31,9 +32,39 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamCreate(req *SuperTeamCreateRequestV1) 
 	}
 
 	resp := &CreateSuperTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析tid和faccid
+	if tidVal, ok := jsonObj["tid"]; ok && tidVal != nil {
+		if tidFloat, ok := tidVal.(float64); ok {
+			resp.Tid = int64(tidFloat)
+		} else if tidStr, ok := tidVal.(string); ok {
+			// tid可能是字符串类型
+			if tidInt, err := strconv.ParseInt(tidStr, 10, 64); err == nil {
+				resp.Tid = tidInt
+			}
+		}
+	}
+	// 按照 Java SDK 标准：从根对象的faccid对象解析
+	if faccidVal, ok := jsonObj["faccid"]; ok && faccidVal != nil {
+		if faccidMap, ok := faccidVal.(map[string]interface{}); ok {
+			resp.Faccid = &SuperTeamFailAccountList{}
+			if msgVal, ok := faccidMap["msg"]; ok {
+				resp.Faccid.Msg = msgVal.(string)
+			}
+			if accidVal, ok := faccidMap["accid"]; ok {
+				var accidStr string
+				if accidStrVal, ok := accidVal.(string); ok {
+					accidStr = accidStrVal
+				} else {
+					accidJson, _ := json.Marshal(accidVal)
+					accidStr = string(accidJson)
+				}
+				if accidStr != "" {
+					var accidList []string
+					json.Unmarshal([]byte(accidStr), &accidList)
+					resp.Faccid.AccidList = accidList
+				}
+			}
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -62,12 +93,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamUpdate(req *SuperTeamUpdateRequestV1) 
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamUpdateResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamUpdateResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -94,12 +121,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamDismiss(req *SuperTeamDismissRequestV1
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamDismissResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamDismissResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -127,9 +150,28 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamInvite(req *SuperTeamInviteRequestV1) 
 	}
 
 	resp := &SuperTeamInviteResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象的faccid对象解析
+	if faccidVal, ok := jsonObj["faccid"]; ok && faccidVal != nil {
+		if faccidMap, ok := faccidVal.(map[string]interface{}); ok {
+			resp.Faccid = &SuperTeamFailAccountList{}
+			if msgVal, ok := faccidMap["msg"]; ok {
+				resp.Faccid.Msg = msgVal.(string)
+			}
+			if accidVal, ok := faccidMap["accid"]; ok {
+				var accidStr string
+				if accidStrVal, ok := accidVal.(string); ok {
+					accidStr = accidStrVal
+				} else {
+					accidJson, _ := json.Marshal(accidVal)
+					accidStr = string(accidJson)
+				}
+				if accidStr != "" {
+					var accidList []string
+					json.Unmarshal([]byte(accidStr), &accidList)
+					resp.Faccid.AccidList = accidList
+				}
+			}
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -158,12 +200,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamKickMember(req *SuperTeamKickMemberReq
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamKickMemberResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamKickMemberResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -190,12 +228,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamMemberLeave(req *SuperTeamMemberLeaveR
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamMemberLeaveResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamMemberLeaveResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -222,12 +256,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamAddManager(req *SuperTeamAddManagerReq
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamAddManagerResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamAddManagerResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -254,12 +284,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamRemoveManager(req *SuperTeamRemoveMana
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamRemoveManagerResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamRemoveManagerResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -286,12 +312,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamChangeOwner(req *SuperTeamChangeOwnerR
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamChangeOwnerResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamChangeOwnerResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -319,9 +341,20 @@ func (s *SuperTeamV1ServiceImpl) GetSuperTeam(req *GetSuperTeamRequestV1) (*core
 	}
 
 	resp := &GetSuperTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析tinfos（JSON字符串）
+	if tinfosVal, ok := jsonObj["tinfos"]; ok && tinfosVal != nil {
+		var tinfosStr string
+		if tinfosStrVal, ok := tinfosVal.(string); ok {
+			tinfosStr = tinfosStrVal
+		} else {
+			tinfosJson, _ := json.Marshal(tinfosVal)
+			tinfosStr = string(tinfosJson)
+		}
+		if tinfosStr != "" {
+			var tinfos []SuperTeamInfo
+			json.Unmarshal([]byte(tinfosStr), &tinfos)
+			resp.Tinfos = tinfos
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -351,9 +384,20 @@ func (s *SuperTeamV1ServiceImpl) GetSuperTeamMember(req *GetSuperTeamMemberReque
 	}
 
 	resp := &GetSuperTeamMemberResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析tlists（JSON字符串）
+	if tlistsVal, ok := jsonObj["tlists"]; ok && tlistsVal != nil {
+		var tlistsStr string
+		if tlistsStrVal, ok := tlistsVal.(string); ok {
+			tlistsStr = tlistsStrVal
+		} else {
+			tlistsJson, _ := json.Marshal(tlistsVal)
+			tlistsStr = string(tlistsJson)
+		}
+		if tlistsStr != "" {
+			var tlists []SuperTeamMemberInfo
+			json.Unmarshal([]byte(tlistsStr), &tlists)
+			resp.Tlists = tlists
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -383,9 +427,20 @@ func (s *SuperTeamV1ServiceImpl) GetJoinSuperTeam(req *GetJoinSuperTeamRequestV1
 	}
 
 	resp := &GetJoinSuperTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析tinfos（JSON字符串）
+	if tinfosVal, ok := jsonObj["tinfos"]; ok && tinfosVal != nil {
+		var tinfosStr string
+		if tinfosStrVal, ok := tinfosVal.(string); ok {
+			tinfosStr = tinfosStrVal
+		} else {
+			tinfosJson, _ := json.Marshal(tinfosVal)
+			tinfosStr = string(tinfosJson)
+		}
+		if tinfosStr != "" {
+			var tinfos []GetJoinSuperTeamInfo
+			json.Unmarshal([]byte(tinfosStr), &tinfos)
+			resp.Tinfos = tinfos
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -414,12 +469,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamUpdateMemberInfo(req *SuperTeamUpdateM
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamUpdateMemberInfoResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamUpdateMemberInfoResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -446,12 +497,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamUpdateNick(req *SuperTeamUpdateNickReq
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamUpdateNickResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamUpdateNickResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -478,12 +525,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamMute(req *SuperTeamMuteRequestV1) (*co
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamMuteResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamMuteResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -510,12 +553,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamMuteTlist(req *SuperTeamMuteTlistReque
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamMuteTlistResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamMuteTlistResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -543,9 +582,20 @@ func (s *SuperTeamV1ServiceImpl) GetSuperTeamMuteMember(req *GetSuperTeamMuteMem
 	}
 
 	resp := &GetSuperTeamMuteMemberResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析muteTlists（JSON字符串）
+	if muteTlistsVal, ok := jsonObj["muteTlists"]; ok && muteTlistsVal != nil {
+		var muteTlistsStr string
+		if muteTlistsStrVal, ok := muteTlistsVal.(string); ok {
+			muteTlistsStr = muteTlistsStrVal
+		} else {
+			muteTlistsJson, _ := json.Marshal(muteTlistsVal)
+			muteTlistsStr = string(muteTlistsJson)
+		}
+		if muteTlistsStr != "" {
+			var muteTlists []SuperTeamMuteMemberInfo
+			json.Unmarshal([]byte(muteTlistsStr), &muteTlists)
+			resp.Tlists = muteTlists
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -574,12 +624,8 @@ func (s *SuperTeamV1ServiceImpl) SuperTeamChangeLevel(req *SuperTeamChangeLevelR
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SuperTeamChangeLevelResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SuperTeamChangeLevelResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -607,9 +653,18 @@ func (s *SuperTeamV1ServiceImpl) SendSuperTeamMessage(req *SendSuperTeamMessageR
 	}
 
 	resp := &SendSuperTeamMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从data字段解析（JSON字符串）
+	if dataVal, ok := jsonObj["data"]; ok && dataVal != nil {
+		var dataStr string
+		if dataStrVal, ok := dataVal.(string); ok {
+			dataStr = dataStrVal
+		} else {
+			dataJson, _ := json.Marshal(dataVal)
+			dataStr = string(dataJson)
+		}
+		if dataStr != "" {
+			json.Unmarshal([]byte(dataStr), resp)
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -638,12 +693,8 @@ func (s *SuperTeamV1ServiceImpl) SendAttachSuperTeamMessage(req *SendAttachSuper
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*SendAttachSuperTeamMessageResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &SendAttachSuperTeamMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -670,12 +721,8 @@ func (s *SuperTeamV1ServiceImpl) RecallSuperTeamMessage(req *RecallSuperTeamMess
 		return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), desc, (*RecallSuperTeamMessageResponseV1)(nil)), nil
 	}
 
+	// 按照 Java SDK 标准：返回空响应
 	resp := &RecallSuperTeamMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
-	}
-
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
 
@@ -703,9 +750,26 @@ func (s *SuperTeamV1ServiceImpl) GetSuperTeamMessage(req *GetSuperTeamMessageReq
 	}
 
 	resp := &GetSuperTeamMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析size和msgs
+	resp.Tid = req.Tid
+	if sizeVal, ok := jsonObj["size"]; ok && sizeVal != nil {
+		if sizeFloat, ok := sizeVal.(float64); ok {
+			resp.Size = int(sizeFloat)
+		}
+	}
+	if msgsVal, ok := jsonObj["msgs"]; ok && msgsVal != nil {
+		var msgsStr string
+		if msgsStrVal, ok := msgsVal.(string); ok {
+			msgsStr = msgsStrVal
+		} else {
+			msgsJson, _ := json.Marshal(msgsVal)
+			msgsStr = string(msgsJson)
+		}
+		if msgsStr != "" {
+			var msgs []GetSuperTeamMessage
+			json.Unmarshal([]byte(msgsStr), &msgs)
+			resp.Msgs = msgs
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -735,9 +799,20 @@ func (s *SuperTeamV1ServiceImpl) GetSuperTeamMessageByIds(req *GetSuperTeamMessa
 	}
 
 	resp := &GetSuperTeamMessageByIdsResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析msgs（JSON字符串）
+	if msgsVal, ok := jsonObj["msgs"]; ok && msgsVal != nil {
+		var msgsStr string
+		if msgsStrVal, ok := msgsVal.(string); ok {
+			msgsStr = msgsStrVal
+		} else {
+			msgsJson, _ := json.Marshal(msgsVal)
+			msgsStr = string(msgsJson)
+		}
+		if msgsStr != "" {
+			var msgs []GetSuperTeamMessage
+			json.Unmarshal([]byte(msgsStr), &msgs)
+			resp.Msgs = msgs
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

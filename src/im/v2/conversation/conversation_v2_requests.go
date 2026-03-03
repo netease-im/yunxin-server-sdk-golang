@@ -31,13 +31,13 @@ type UpdateConversationRequestV2 struct {
 // DeleteConversationRequestV2 删除会话请求
 type DeleteConversationRequestV2 struct {
 	ConversationId string `json:"-"` // 会话ID，用于构造URL
-	ClearMessage   bool   `json:"-"` // 是否清除消息，用于构造查询参数
+	ClearMessage   *bool  `json:"-"` // 是否清除消息，用于构造查询参数
 }
 
 // BatchDeleteConversationsRequestV2 批量删除会话请求
 type BatchDeleteConversationsRequestV2 struct {
 	ConversationIds []string `json:"-"` // 会话ID列表，用于构造查询参数
-	ClearMessage    bool     `json:"-"` // 是否清除消息，用于构造查询参数
+	ClearMessage    *bool    `json:"-"` // 是否清除消息，用于构造查询参数
 }
 
 // GetConversationRequestV2 获取会话请求
@@ -60,5 +60,5 @@ type ListConversationsRequestV2 struct {
 // StickTopConversationRequestV2 置顶会话请求
 type StickTopConversationRequestV2 struct {
 	ConversationId string `json:"-"`        // 会话ID，用于构造URL
-	TopType        int    `json:"top_type"` // 置顶类型
+	TopType        *int   `json:"top_type"` // 置顶类型
 }

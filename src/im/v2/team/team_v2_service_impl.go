@@ -35,7 +35,7 @@ func (s *TeamV2ServiceImpl) UpdateTeam(req *UpdateTeamRequestV2) (*core.Result[*
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.PUT, UpdateTeam, pathParams, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.PATCH, UpdateTeam, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +50,12 @@ func (s *TeamV2ServiceImpl) DisbandTeam(req *DisbandTeamRequestV2) (*core.Result
 	}
 
 	queryParams := map[string]string{
-		"team_type":   strconv.Itoa(req.TeamType),
+		"team_type":   strconv.Itoa(*req.TeamType),
 		"operator_id": req.OperatorId,
+	}
+
+	if req.Extension != "" {
+		queryParams["extension"] = req.Extension
 	}
 
 	apiResponse, err := s.httpClient.ExecuteV2Api(http.DELETE, DisbandTeam, pathParams, queryParams, "")
@@ -64,12 +68,18 @@ func (s *TeamV2ServiceImpl) DisbandTeam(req *DisbandTeamRequestV2) (*core.Result
 
 // BatchQueryTeamInfo 批量查询群组信息
 func (s *TeamV2ServiceImpl) BatchQueryTeamInfo(req *BatchQueryTeamInfoRequestV2) (*core.Result[*BatchQueryTeamInfoResponseV2], error) {
-	requestBody, err := json.Marshal(req)
+	// Serialize team_ids as JSON array
+	teamIdsBytes, err := json.Marshal(req.TeamIds)
 	if err != nil {
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, BatchQueryTeams, nil, nil, string(requestBody))
+	queryParams := map[string]string{
+		"team_type": strconv.Itoa(*req.TeamType),
+		"team_ids":  string(teamIdsBytes),
+	}
+
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, BatchQueryTeams, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +98,7 @@ func (s *TeamV2ServiceImpl) TransferOwner(req *TransferTeamOwnerRequestV2) (*cor
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, TransferOwner, pathParams, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.PATCH, TransferOwner, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +136,7 @@ func (s *TeamV2ServiceImpl) RemoveManagers(req *RemoveTeamManagersRequestV2) (*c
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, RemoveManager, pathParams, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.DELETE, RemoveManager, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +151,7 @@ func (s *TeamV2ServiceImpl) GetTeamInfo(req *GetTeamInfoRequestV2) (*core.Result
 	}
 
 	queryParams := map[string]string{
-		"team_type": strconv.Itoa(req.TeamType),
+		"team_type": strconv.Itoa(*req.TeamType),
 	}
 
 	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, GetTeamInfo, pathParams, queryParams, "")
@@ -159,7 +169,7 @@ func (s *TeamV2ServiceImpl) ListTeamMembers(req *ListTeamMembersRequestV2) (*cor
 	}
 
 	queryParams := map[string]string{
-		"team_type": strconv.Itoa(req.TeamType),
+		"team_type": strconv.Itoa(*req.TeamType),
 	}
 
 	if req.Offset > 0 {
@@ -186,7 +196,11 @@ func (s *TeamV2ServiceImpl) ListOnlineTeamMembers(req *ListOnlineTeamMembersRequ
 		"team_id": req.TeamId,
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, ListOnlineTeamMembers, pathParams, nil, "")
+	queryParams := map[string]string{
+		"team_type": strconv.Itoa(*req.TeamType),
+	}
+
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, ListOnlineTeamMembers, pathParams, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -196,12 +210,21 @@ func (s *TeamV2ServiceImpl) ListOnlineTeamMembers(req *ListOnlineTeamMembersRequ
 
 // BatchQueryTeamOnlineMembersCount 批量查询群在线成员数量
 func (s *TeamV2ServiceImpl) BatchQueryTeamOnlineMembersCount(req *BatchQueryTeamOnlineMembersCountRequestV2) (*core.Result[*BatchQueryTeamOnlineMembersCountResponseV2], error) {
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"team_type": strconv.Itoa(*req.TeamType),
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, BatchQueryTeamOnlineMembersCount, nil, nil, string(requestBody))
+	// Join team IDs with comma
+	teamIdsStr := ""
+	for i, id := range req.TeamIds {
+		if i > 0 {
+			teamIdsStr += ","
+		}
+		teamIdsStr += strconv.FormatInt(id, 10)
+	}
+	queryParams["team_ids"] = teamIdsStr
+
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, BatchQueryTeamOnlineMembersCount, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}

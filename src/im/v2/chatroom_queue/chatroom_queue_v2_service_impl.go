@@ -78,7 +78,7 @@ func (c *ChatroomQueueV2ServiceImpl) UpdateChatroomQueue(req *UpdateChatroomQueu
 		return nil, err
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.PUT, UpdateChatroomQueue, pathParams, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.PATCH, UpdateChatroomQueue, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}

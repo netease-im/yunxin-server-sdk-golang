@@ -6,7 +6,7 @@ package friend
 type AddFriendRequestV1 struct {
 	Accid    string `json:"accid,omitempty"`
 	Faccid   string `json:"faccid,omitempty"`
-	Type     int    `json:"type,omitempty"`
+	Type     *int   `json:"type,omitempty"`
 	Msg      string `json:"msg,omitempty"`
 	Serverex string `json:"serverex,omitempty"`
 }
@@ -15,13 +15,13 @@ type AddFriendRequestV1 struct {
 type DeleteFriendRequestV1 struct {
 	Accid       string `json:"accid,omitempty"`
 	Faccid      string `json:"faccid,omitempty"`
-	DeleteAlias bool   `json:"isDeleteAlias,omitempty"`
+	DeleteAlias *bool  `json:"isDeleteAlias,omitempty"`
 }
 
 // GetFriendListRequestV1 GetFriendList请求
 type GetFriendListRequestV1 struct {
 	Accid      string `json:"accid,omitempty"`
-	Updatetime int64  `json:"updatetime,omitempty"`
+	Updatetime *int64 `json:"updatetime,omitempty"` // 使用指针，0是有效值
 }
 
 // GetFriendRelationshipRequestV1 GetFriendRelationship请求

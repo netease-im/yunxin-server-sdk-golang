@@ -12,7 +12,7 @@ type RemoveMuteContactResponseV2 struct {
 
 // ListMuteContactsResponseV2 列出免打扰联系人响应
 type ListMuteContactsResponseV2 struct {
-	HasMore   bool     `json:"has_more,omitempty"`   // 是否有更多数据
+	HasMore   *bool    `json:"has_more,omitempty"`   // 是否有更多数据
 	NextToken string   `json:"next_token,omitempty"` // 下一页token
 	Items     []string `json:"items,omitempty"`      // 免打扰联系人列表
 }

@@ -49,12 +49,15 @@ func (f *FriendV2ServiceImpl) DeleteFriend(req *DeleteFriendRequestV2) (*core.Re
 		"account_id": req.AccountId,
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"friend_account_id": req.FriendAccountId,
 	}
 
-	apiResponse, err := f.httpClient.ExecuteV2Api(http.DELETE, DeleteFriend, pathParams, nil, string(requestBody))
+	if req.DeleteAlias != nil {
+		queryParams["delete_alias"] = fmt.Sprintf("%t", *req.DeleteAlias)
+	}
+
+	apiResponse, err := f.httpClient.ExecuteV2Api(http.DELETE, DeleteFriend, pathParams, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -155,8 +158,8 @@ func (f *FriendV2ServiceImpl) HandleFriendAddition(req *HandleFriendAdditionRequ
 		return nil, fmt.Errorf("friend account ID cannot be empty")
 	}
 
-	if req.HandleType == 0 {
-		return nil, fmt.Errorf("handle type cannot be empty")
+	if req.Type == 0 {
+		return nil, fmt.Errorf("type cannot be empty")
 	}
 
 	requestBody, err := json.Marshal(req)

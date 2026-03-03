@@ -77,12 +77,11 @@ func (c *ConversationGroupV2ServiceImpl) DeleteConversationGroup(req *DeleteConv
 		"group_id": strconv.FormatInt(req.GroupId, 10),
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"account_id": req.AccountId,
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.DELETE, DeleteConversationGroup, pathParams, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.DELETE, DeleteConversationGroup, pathParams, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +104,11 @@ func (c *ConversationGroupV2ServiceImpl) GetConversationGroup(req *GetConversati
 		"group_id": strconv.FormatInt(req.GroupId, 10),
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"account_id": req.AccountId,
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.POST, GetConversationGroup, pathParams, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.GET, GetConversationGroup, pathParams, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -129,12 +127,21 @@ func (c *ConversationGroupV2ServiceImpl) BatchGetConversationGroups(req *BatchGe
 		return nil, fmt.Errorf("group IDs cannot be empty")
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"account_id": req.AccountId,
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.POST, BatchGetConversationGroups, nil, nil, string(requestBody))
+	// Convert group IDs to comma-separated string
+	groupIdsStr := ""
+	for i, id := range req.GroupIds {
+		if i > 0 {
+			groupIdsStr += ","
+		}
+		groupIdsStr += strconv.FormatInt(id, 10)
+	}
+	queryParams["group_ids"] = groupIdsStr
+
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.GET, BatchGetConversationGroups, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -149,12 +156,11 @@ func (c *ConversationGroupV2ServiceImpl) ListAllConversationGroups(req *ListAllC
 		return nil, fmt.Errorf("account ID cannot be empty")
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	queryParams := map[string]string{
+		"account_id": req.AccountId,
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.POST, ListAllConversationGroups, nil, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.GET, ListAllConversationGroups, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}

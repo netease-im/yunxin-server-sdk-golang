@@ -33,12 +33,12 @@ func (b *BroadcastV2ServiceImpl) SendBroadcastNotification(req *SendBroadcastNot
 // DeleteBroadcastNotification 删除广播通知
 func (b *BroadcastV2ServiceImpl) DeleteBroadcastNotification(req *DeleteBroadcastNotificationRequestV2) (*core.Result[*DeleteBroadcastNotificationResponseV2], error) {
 	// Validate required parameters
-	if req.BroadcastId == "" {
+	if req.BroadcastId == 0 {
 		return nil, fmt.Errorf("broadcast ID cannot be empty")
 	}
 
 	pathParams := map[string]string{
-		"broadcast_id": req.BroadcastId,
+		"broadcast_id": strconv.FormatInt(req.BroadcastId, 10),
 	}
 
 	apiResponse, err := b.httpClient.ExecuteV2Api(http.DELETE, DeleteBroadcastNotification, pathParams, nil, "")
@@ -52,12 +52,12 @@ func (b *BroadcastV2ServiceImpl) DeleteBroadcastNotification(req *DeleteBroadcas
 // QueryBroadcastNotification 查询广播通知
 func (b *BroadcastV2ServiceImpl) QueryBroadcastNotification(req *QueryBroadcastNotificationRequestV2) (*core.Result[*QueryBroadcastNotificationResponseV2], error) {
 	// Validate required parameters
-	if req.BroadcastId == "" {
+	if req.BroadcastId == 0 {
 		return nil, fmt.Errorf("broadcast ID cannot be empty")
 	}
 
 	pathParams := map[string]string{
-		"broadcast_id": req.BroadcastId,
+		"broadcast_id": strconv.FormatInt(req.BroadcastId, 10),
 	}
 
 	apiResponse, err := b.httpClient.ExecuteV2Api(http.GET, QueryBroadcastNotification, pathParams, nil, "")
@@ -81,8 +81,8 @@ func (b *BroadcastV2ServiceImpl) QueryBroadcastNotificationList(req *QueryBroadc
 		queryParams["limit"] = strconv.Itoa(req.Limit)
 	}
 
-	if req.Type > 0 {
-		queryParams["type"] = strconv.Itoa(req.Type)
+	if req.Type != nil && *req.Type > 0 {
+		queryParams["type"] = strconv.Itoa(*req.Type)
 	}
 
 	apiResponse, err := b.httpClient.ExecuteV2Api(http.GET, BroadcastNotification, nil, queryParams, "")

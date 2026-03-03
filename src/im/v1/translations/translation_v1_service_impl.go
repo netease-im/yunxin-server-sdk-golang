@@ -31,9 +31,18 @@ func (s *TranslationV1ServiceImpl) TranslatorText(req *TextTranslationRequestV1)
 	}
 
 	resp := &TextTranslationResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从data字段解析（JSON字符串）
+	if dataVal, ok := jsonObj["data"]; ok && dataVal != nil {
+		var dataStr string
+		if dataStrVal, ok := dataVal.(string); ok {
+			dataStr = dataStrVal
+		} else {
+			dataJson, _ := json.Marshal(dataVal)
+			dataStr = string(dataJson)
+		}
+		if dataStr != "" {
+			json.Unmarshal([]byte(dataStr), resp)
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

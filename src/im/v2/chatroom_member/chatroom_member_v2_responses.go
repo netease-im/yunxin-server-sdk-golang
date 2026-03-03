@@ -12,8 +12,8 @@ type UpdateOnlineMemberInfoResponseV2 struct {
 	AccountId  string `json:"account_id,omitempty"`  // 账号ID
 	RoomNick   string `json:"room_nick,omitempty"`   // 聊天室昵称
 	RoomAvatar string `json:"room_avatar,omitempty"` // 聊天室头像
-	MemberRole int    `json:"member_role,omitempty"` // 成员角色
-	IsOnline   bool   `json:"is_online,omitempty"`   // 是否在线
+	MemberRole *int   `json:"member_role,omitempty"` // 成员角色
+	IsOnline   *bool  `json:"is_online,omitempty"`   // 是否在线
 }
 
 // ToggleChatBanResponseV2 切换禁言响应
@@ -45,7 +45,7 @@ type QueryTaggedMembersCountResponseV2 struct {
 // ListTaggedMembersResponseV2 列出标签成员响应
 type ListTaggedMembersResponseV2 struct {
 	Offset  int64              `json:"offset,omitempty"`   // 偏移量
-	HasMore bool               `json:"has_more,omitempty"` // 是否有更多数据
+	HasMore *bool              `json:"has_more,omitempty"` // 是否有更多数据
 	Items   []TaggedMemberInfo `json:"items,omitempty"`    // 标签成员信息列表
 }
 
@@ -99,7 +99,7 @@ type TaggedMemberInfo struct {
 	RoomNick   string `json:"room_nick,omitempty"`   // 聊天室昵称
 	RoomAvatar string `json:"room_avatar,omitempty"` // 聊天室头像
 	Extension  string `json:"extension,omitempty"`   // 扩展字段
-	MemberRole int    `json:"member_role,omitempty"` // 成员角色
+	MemberRole *int   `json:"member_role,omitempty"` // 成员角色
 }
 
 // BlacklistMemberInfo 黑名单成员信息
@@ -117,8 +117,8 @@ type MemberInfo struct {
 	RoomNick    string `json:"room_nick,omitempty"`    // 聊天室昵称
 	RoomAvatar  string `json:"room_avatar,omitempty"`  // 聊天室头像
 	Extension   string `json:"extension,omitempty"`    // 扩展字段
-	MemberRole  int    `json:"member_role,omitempty"`  // 成员角色
-	MemberLevel int    `json:"member_level,omitempty"` // 成员等级
+	MemberRole  *int   `json:"member_role,omitempty"`  // 成员角色
+	MemberLevel *int   `json:"member_level,omitempty"` // 成员等级
 	EnterTime   int64  `json:"enter_time,omitempty"`   // 进入时间
 }
 
@@ -143,7 +143,7 @@ type BannedMember struct {
 	AccountId          string `json:"account_id,omitempty"`            // 账号ID
 	RoomNick           string `json:"room_nick,omitempty"`             // 聊天室昵称
 	RoomAvatar         string `json:"room_avatar,omitempty"`           // 聊天室头像
-	ChatBanned         bool   `json:"chat_banned,omitempty"`           // 是否禁言
-	TempChatBanned     bool   `json:"temp_chat_banned,omitempty"`      // 是否临时禁言
+	ChatBanned         *bool  `json:"chat_banned,omitempty"`           // 是否禁言
+	TempChatBanned     *bool  `json:"temp_chat_banned,omitempty"`      // 是否临时禁言
 	TempChatBannedTime int64  `json:"temp_chat_banned_time,omitempty"` // 临时禁言时间
 }

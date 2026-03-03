@@ -10,7 +10,7 @@ const (
 	SendP2PReadReceipt         = "/im/v2/messages/actions/p2p_read_receipt"                               // Send P2P read receipt endpoint
 	SendTeamReadReceipt        = "/im/v2/messages/actions/team_read_receipt"                              // Send team read receipt endpoint
 	QueryTeamReadReceipt       = "/im/v2/messages/actions/team_read_receipt"                              // Query team message read receipt details endpoint
-	StreamMessage              = "/im/v2/conversations/{conversation_id}/messages/actions/stream_message" // Send streaming message endpoint
+	StreamMessageURL           = "/im/v2/conversations/{conversation_id}/messages/actions/stream_message" // Send streaming message endpoint
 	QueryMessage               = "/im/v2.1/conversations/{conversation_id}/messages/{message_server_id}"  // Query single message details endpoint
 	SearchMessages             = "/im/v2.1/messages/actions/search_messages"                              // Search messages endpoint
 	QueryConversationMessages  = "/im/v2.1/conversations/{conversation_id}/messages"                      // Query conversation messages with pagination endpoint

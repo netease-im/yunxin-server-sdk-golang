@@ -31,9 +31,10 @@ func (c *ChatroomV1ServiceImpl) CreateChatroom(req *CreateChatroomRequestV1) (*c
 	}
 
 	resp := &CreateChatroomResponseV1{}
-	if dataVal, ok := jsonObj["chatroom"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从chatroom字段解析
+	if chatroomVal, ok := jsonObj["chatroom"]; ok && chatroomVal != nil {
+		chatroomJson, _ := json.Marshal(chatroomVal)
+		json.Unmarshal(chatroomJson, resp)
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -63,9 +64,10 @@ func (c *ChatroomV1ServiceImpl) UpdateChatroom(req *UpdateChatroomRequestV1) (*c
 	}
 
 	resp := &UpdateChatroomResponseV1{}
-	if dataVal, ok := jsonObj["chatroom"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从chatroom字段解析
+	if chatroomVal, ok := jsonObj["chatroom"]; ok && chatroomVal != nil {
+		chatroomJson, _ := json.Marshal(chatroomVal)
+		json.Unmarshal(chatroomJson, resp)
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -95,8 +97,20 @@ func (c *ChatroomV1ServiceImpl) QueryChatroomAddress(req *QueryChatroomAddressRe
 	}
 
 	resp := &QueryChatroomAddressResponseV1{}
-	if addr, ok := jsonObj["addr"].(string); ok && addr != "" {
-		json.Unmarshal([]byte(addr), &resp.ChatroomAddress)
+	// 按照 Java SDK 标准：从addr字段解析（JSON字符串）
+	if addrVal, ok := jsonObj["addr"]; ok && addrVal != nil {
+		var addrStr string
+		if addrStrVal, ok := addrVal.(string); ok {
+			addrStr = addrStrVal
+		} else {
+			addrJson, _ := json.Marshal(addrVal)
+			addrStr = string(addrJson)
+		}
+		if addrStr != "" {
+			var addrList []string
+			json.Unmarshal([]byte(addrStr), &addrList)
+			resp.ChatroomAddress = addrList
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -126,9 +140,10 @@ func (c *ChatroomV1ServiceImpl) QueryChatroomInfo(req *QueryChatroomInfoRequestV
 	}
 
 	resp := &QueryChatroomInfoResponseV1{}
-	if dataVal, ok := jsonObj["chatroom"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从chatroom字段解析
+	if chatroomVal, ok := jsonObj["chatroom"]; ok && chatroomVal != nil {
+		chatroomJson, _ := json.Marshal(chatroomVal)
+		json.Unmarshal(chatroomJson, resp)
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

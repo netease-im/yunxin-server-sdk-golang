@@ -5,12 +5,12 @@ type SetMemberRoleRequestV2 struct {
 	AccountId             string                 `json:"-"`                                // 账号ID，用于构造URL
 	RoomId                int64                  `json:"room_id"`                          // 聊天室ID
 	OperatorAccountId     string                 `json:"operator_account_id"`              // 操作者账号ID
-	MemberRole            int                    `json:"member_role"`                      // 成员角色
+	MemberRole            *int                   `json:"member_role,omitempty"`            // 成员角色：0-普通成员，2-管理员，3-游客
 	RoomNick              string                 `json:"room_nick,omitempty"`              // 聊天室昵称
 	RoomAvatar            string                 `json:"room_avatar,omitempty"`            // 聊天室头像
-	MemberLevel           int                    `json:"member_level,omitempty"`           // 成员等级
+	MemberLevel           *int                   `json:"member_level,omitempty"`           // 成员等级
 	Extension             string                 `json:"extension,omitempty"`              // 扩展字段
-	NotificationEnabled   bool                   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	NotificationEnabled   *bool                  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string                 `json:"notification_extension,omitempty"` // 通知扩展字段
 	AntispamConfiguration *AntispamConfiguration `json:"antispam_configuration,omitempty"` // 反垃圾配置
 }
@@ -19,11 +19,11 @@ type SetMemberRoleRequestV2 struct {
 type UpdateOnlineMemberInfoRequestV2 struct {
 	AccountId             string                 `json:"-"`                                // 账号ID，用于构造URL
 	RoomId                int64                  `json:"room_id"`                          // 聊天室ID
-	Persistence           bool                   `json:"persistence,omitempty"`            // 是否持久化
+	Persistence           *bool                  `json:"persistence,omitempty"`            // 是否持久化
 	RoomNick              string                 `json:"room_nick,omitempty"`              // 聊天室昵称
 	RoomAvatar            string                 `json:"room_avatar,omitempty"`            // 聊天室头像
 	Extension             string                 `json:"extension,omitempty"`              // 扩展字段
-	NotificationEnabled   bool                   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	NotificationEnabled   *bool                  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string                 `json:"notification_extension,omitempty"` // 通知扩展字段
 	AntispamConfiguration *AntispamConfiguration `json:"antispam_configuration,omitempty"` // 反垃圾配置
 }
@@ -33,8 +33,8 @@ type ToggleChatBanRequestV2 struct {
 	AccountId             string `json:"-"`                                // 账号ID，用于构造URL
 	RoomId                int64  `json:"room_id"`                          // 聊天室ID
 	OperatorAccountId     string `json:"operator_account_id"`              // 操作者账号ID
-	ChatBanned            bool   `json:"chat_banned"`                      // 是否禁言
-	NotificationEnabled   bool   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	ChatBanned            *bool  `json:"chat_banned"`                      // 是否禁言
+	NotificationEnabled   *bool  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string `json:"notification_extension,omitempty"` // 通知扩展字段
 }
 
@@ -43,9 +43,9 @@ type ToggleTempChatBanRequestV2 struct {
 	AccountId             string `json:"-"`                                // 账号ID，用于构造URL
 	RoomId                int64  `json:"room_id"`                          // 聊天室ID
 	OperatorAccountId     string `json:"operator_account_id"`              // 操作者账号ID
-	ChatBanned            bool   `json:"chat_banned"`                      // 是否禁言
+	ChatBanned            *bool  `json:"chat_banned"`                      // 是否禁言
 	ChatBannedDuration    int64  `json:"chat_banned_duration,omitempty"`   // 禁言时长（毫秒）
-	NotificationEnabled   bool   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	NotificationEnabled   *bool  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string `json:"notification_extension,omitempty"` // 通知扩展字段
 }
 
@@ -54,8 +54,8 @@ type ToggleBlockedRequestV2 struct {
 	AccountId             string `json:"-"`                                // 账号ID，用于构造URL
 	RoomId                int64  `json:"room_id"`                          // 聊天室ID
 	OperatorAccountId     string `json:"operator_account_id"`              // 操作者账号ID
-	Blocked               bool   `json:"blocked"`                          // 是否屏蔽
-	NotificationEnabled   bool   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	Blocked               *bool  `json:"blocked"`                          // 是否屏蔽
+	NotificationEnabled   *bool  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string `json:"notification_extension,omitempty"` // 通知扩展字段
 }
 
@@ -92,9 +92,9 @@ type ToggleTaggedMembersChatBanRequestV2 struct {
 	RoomId                 int64  `json:"room_id"`                            // 聊天室ID
 	OperatorAccountId      string `json:"operator_account_id"`                // 操作者账号ID
 	TargetTag              string `json:"target_tag"`                         // 目标标签
-	ChatBanned             bool   `json:"chat_banned"`                        // 是否禁言
+	ChatBanned             *bool  `json:"chat_banned"`                        // 是否禁言
 	ChatBannedDuration     int64  `json:"chat_banned_duration,omitempty"`     // 禁言时长（毫秒）
-	NotificationEnabled    bool   `json:"notification_enabled,omitempty"`     // 是否启用通知
+	NotificationEnabled    *bool  `json:"notification_enabled,omitempty"`     // 是否启用通知
 	NotificationExtension  string `json:"notification_extension,omitempty"`   // 通知扩展字段
 	NotificationTargetTags string `json:"notification_target_tags,omitempty"` // 通知目标标签
 }
@@ -110,7 +110,7 @@ type AddVirtualMembersRequestV2 struct {
 	RoomId                int64               `json:"room_id"`                          // 聊天室ID
 	VirtualMembers        []VirtualMemberInfo `json:"virtual_members"`                  // 虚拟成员列表
 	Extension             string              `json:"extension,omitempty"`              // 扩展字段
-	NotificationEnabled   bool                `json:"notification_enabled,omitempty"`   // 是否启用通知
+	NotificationEnabled   *bool               `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string              `json:"notification_extension,omitempty"` // 通知扩展字段
 }
 
@@ -118,13 +118,13 @@ type AddVirtualMembersRequestV2 struct {
 type DeleteVirtualMembersRequestV2 struct {
 	RoomId              int64    `json:"room_id"`                        // 聊天室ID
 	AccountIds          []string `json:"account_ids"`                    // 账号ID列表
-	NotificationEnabled bool     `json:"notification_enabled,omitempty"` // 是否启用通知
+	NotificationEnabled *bool    `json:"notification_enabled,omitempty"` // 是否启用通知
 }
 
 // ClearVirtualMembersRequestV2 清空虚拟成员请求
 type ClearVirtualMembersRequestV2 struct {
 	RoomId              int64 `json:"room_id"`                        // 聊天室ID
-	NotificationEnabled bool  `json:"notification_enabled,omitempty"` // 是否启用通知
+	NotificationEnabled *bool `json:"notification_enabled,omitempty"` // 是否启用通知
 }
 
 // QueryVirtualMembersRequestV2 查询虚拟成员请求
@@ -147,12 +147,12 @@ type VirtualMemberInfo struct {
 
 // AntispamConfiguration 反垃圾配置
 type AntispamConfiguration struct {
-	Enabled       bool            `json:"enabled,omitempty"`         // 是否启用反垃圾
+	Enabled       *bool           `json:"enabled,omitempty"`         // 是否启用反垃圾
 	BusinessIdMap []BusinessIdMap `json:"business_id_map,omitempty"` // 反垃圾业务ID映射列表
 }
 
 // BusinessIdMap 反垃圾业务ID映射
 type BusinessIdMap struct {
-	Type       int    `json:"type,omitempty"`        // 检测类型（1: 文本，2: 图片）
+	Type       *int   `json:"type,omitempty"`        // 检测类型（1: 文本，2: 图片）
 	BusinessId string `json:"business_id,omitempty"` // 反垃圾业务ID
 }

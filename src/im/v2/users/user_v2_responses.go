@@ -19,7 +19,7 @@ type UserInfo struct {
 	Email     string `json:"email"`      // 用户邮箱
 	Birthday  string `json:"birthday"`   // 用户生日
 	Mobile    string `json:"mobile"`     // 用户手机号
-	Gender    int    `json:"gender"`     // 用户性别
+	Gender    *int   `json:"gender"`     // 用户性别
 	Extension string `json:"extension"`  // 自定义扩展字段
 }
 
@@ -32,7 +32,7 @@ type FailedInfo struct {
 
 // ClientStatus 客户端状态
 type ClientStatus struct {
-	ClientType int   `json:"client_type"` // 客户端类型
+	ClientType *int  `json:"client_type"` // 客户端类型
 	LoginTime  int64 `json:"login_time"`  // 登录时间
 }
 
@@ -44,12 +44,28 @@ type UserOnlineStatus struct {
 
 // UpdateUserResponseV2 更新用户信息响应
 type UpdateUserResponseV2 struct {
-	UserInfo UserInfo `json:"user_info"` // 用户信息
+	AccountId string `json:"account_id"` // 账号ID
+	Name      string `json:"name"`       // 用户昵称
+	Avatar    string `json:"avatar"`     // 用户头像URL
+	Sign      string `json:"sign"`       // 用户签名
+	Email     string `json:"email"`      // 用户邮箱
+	Birthday  string `json:"birthday"`   // 用户生日
+	Mobile    string `json:"mobile"`     // 用户手机号
+	Gender    *int   `json:"gender"`     // 用户性别
+	Extension string `json:"extension"`  // 自定义扩展字段
 }
 
 // GetUserResponseV2 获取用户信息响应
 type GetUserResponseV2 struct {
-	UserInfo UserInfo `json:"user_info"` // 用户信息
+	AccountId string `json:"account_id"` // 账号ID
+	Name      string `json:"name"`       // 用户昵称
+	Avatar    string `json:"avatar"`     // 用户头像URL
+	Sign      string `json:"sign"`       // 用户签名
+	Email     string `json:"email"`      // 用户邮箱
+	Birthday  string `json:"birthday"`   // 用户生日
+	Mobile    string `json:"mobile"`     // 用户手机号
+	Gender    *int   `json:"gender"`     // 用户性别
+	Extension string `json:"extension"`  // 自定义扩展字段
 }
 
 // BatchGetUsersResponseV2 批量获取用户信息响应

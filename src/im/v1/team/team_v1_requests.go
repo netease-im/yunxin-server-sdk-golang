@@ -16,7 +16,7 @@ type AddTeamRequestV1 struct {
 	Owner   string   `json:"owner,omitempty"`
 	Attach  string   `json:"attach,omitempty"`
 	Members []string `json:"members,omitempty"`
-	Magree  int      `json:"magree,omitempty"`
+	Magree  *int     `json:"magree,omitempty"`
 	Msg     string   `json:"msg,omitempty"`
 }
 
@@ -30,7 +30,7 @@ type ChangeOwnerTeamRequestV1 struct {
 	Tid      int64  `json:"tid,omitempty"`
 	Owner    string `json:"owner,omitempty"`
 	NewOwner string `json:"newowner,omitempty"`
-	Leave    int    `json:"leave,omitempty"`
+	Leave    *int   `json:"leave,omitempty"`
 	Attach   string `json:"attach,omitempty"`
 }
 
@@ -44,17 +44,17 @@ type CreateTeamRequestV1 struct {
 	Custom                  string   `json:"custom,omitempty"`
 	Icon                    string   `json:"icon,omitempty"`
 	Bid                     string   `json:"bid,omitempty"`
-	Joinmode                int      `json:"joinmode,omitempty"`
-	Beinvitemode            int      `json:"beinvitemode,omitempty"`
-	Invitemode              int      `json:"invitemode,omitempty"`
-	Uptinfomode             int      `json:"uptinfomode,omitempty"`
-	Upcustommode            int      `json:"upcustommode,omitempty"`
-	IsNotifyCloseOnline     int      `json:"isNotifyCloseOnline,omitempty"`
-	IsNotifyClosePersistent int      `json:"isNotifyClosePersistent,omitempty"`
+	Joinmode                *int     `json:"joinmode,omitempty"`                // 使用指针，0是有效值
+	Beinvitemode            *int     `json:"beinvitemode,omitempty"`            // 使用指针，0是有效值
+	Invitemode              *int     `json:"invitemode,omitempty"`              // 使用指针，0是有效值
+	Uptinfomode             *int     `json:"uptinfomode,omitempty"`             // 使用指针，0是有效值
+	Upcustommode            *int     `json:"upcustommode,omitempty"`            // 使用指针，0是有效值
+	IsNotifyCloseOnline     *int     `json:"isNotifyCloseOnline,omitempty"`     // 使用指针，0是有效值
+	IsNotifyClosePersistent *int     `json:"isNotifyClosePersistent,omitempty"` // 使用指针，0是有效值
 	Msg                     string   `json:"msg,omitempty"`
 	Members                 []string `json:"members,omitempty"`
-	TeamMemberLimit         int      `json:"teamMemberLimit,omitempty"`
-	Magree                  int      `json:"magree,omitempty"`
+	TeamMemberLimit         int      `json:"teamMemberLimit,omitempty"` // 成员上限，0无意义
+	Magree                  *int     `json:"magree,omitempty"`
 }
 
 // DismissTeamRequestV1 DismissTeam请求
@@ -88,15 +88,15 @@ type LeaveTeamRequestV1 struct {
 type MuteTeamAllMemberRequestV1 struct {
 	Tid      int64  `json:"tid,omitempty"`
 	Owner    string `json:"owner,omitempty"`
-	Mute     bool   `json:"mute,omitempty"`
-	MuteType int    `json:"muteType,omitempty"`
+	Mute     *bool  `json:"mute,omitempty"`
+	MuteType *int   `json:"muteType,omitempty"`
 	Attach   string `json:"attach,omitempty"`
 }
 
 // MuteTeamRequestV1 MuteTeam请求
 type MuteTeamRequestV1 struct {
 	Tid   int64  `json:"tid,omitempty"`
-	Ope   int    `json:"ope,omitempty"`
+	Ope   *int   `json:"ope,omitempty"`
 	Accid string `json:"accid,omitempty"`
 }
 
@@ -105,7 +105,7 @@ type MuteTeamTargetMemberRequestV1 struct {
 	Tid    int64  `json:"tid,omitempty"`
 	Accid  string `json:"accid,omitempty"`
 	Owner  string `json:"owner,omitempty"`
-	Mute   int    `json:"mute,omitempty"`
+	Mute   *int   `json:"mute,omitempty"`
 	Attach string `json:"attach,omitempty"`
 }
 
@@ -135,13 +135,13 @@ type QueryTeamMsgMarkReadInfoRequestV1 struct {
 	Tid       int64  `json:"tid,omitempty"`
 	MsgId     int64  `json:"msgid,omitempty"`
 	FromAccid string `json:"fromAccid,omitempty"`
-	Snapshot  bool   `json:"snapshot,omitempty"`
+	Snapshot  *bool  `json:"snapshot,omitempty"`
 }
 
 // QueryTeamRequestV1 QueryTeam请求
 type QueryTeamRequestV1 struct {
 	Tids []int64 `json:"tids,omitempty"`
-	Ope  int     `json:"ope,omitempty"`
+	Ope  *int    `json:"ope,omitempty"`
 }
 
 // RemoveManagerTeamRequestV1 RemoveManagerTeam请求
@@ -171,11 +171,11 @@ type UpdateTeamRequestV1 struct {
 	Custom          string `json:"custom,omitempty"`
 	Icon            string `json:"icon,omitempty"`
 	Bid             string `json:"bid,omitempty"`
-	Joinmode        int    `json:"joinmode,omitempty"`
-	Beinvitemode    int    `json:"beinvitemode,omitempty"`
-	Invitemode      int    `json:"invitemode,omitempty"`
-	Uptinfomode     int    `json:"uptinfomode,omitempty"`
-	Upcustommode    int    `json:"upcustommode,omitempty"`
+	Joinmode        *int   `json:"joinmode,omitempty"`
+	Beinvitemode    *int   `json:"beinvitemode,omitempty"`
+	Invitemode      *int   `json:"invitemode,omitempty"`
+	Uptinfomode     *int   `json:"uptinfomode,omitempty"`
+	Upcustommode    *int   `json:"upcustommode,omitempty"`
 	Attach          string `json:"attach,omitempty"`
-	TeamMemberLimit int    `json:"teamMemberLimit,omitempty"`
+	TeamMemberLimit int    `json:"teamMemberLimit,omitempty"` // 成员上限，0无意义
 }

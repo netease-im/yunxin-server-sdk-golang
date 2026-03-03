@@ -15,7 +15,7 @@ type SignalRoomInfo struct {
 	ChannelId        string             `json:"channel_id"`         // 信令房间ID
 	CreatorAccountId string             `json:"creator_account_id"` // 创建者账号ID
 	ChannelExtension string             `json:"channel_extension"`  // 信令房间扩展字段
-	ChannelType      int                `json:"channel_type"`       // 信令房间类型
+	ChannelType      *int               `json:"channel_type"`       // 信令房间类型
 	CreateTime       int64              `json:"create_time"`        // 创建时间
 	ExpireTime       int64              `json:"expire_time"`        // 过期时间
 	MemberList       []SignalRoomMember `json:"member_list"`        // 成员列表

@@ -12,7 +12,7 @@ type RemoveBlockContactResponseV2 struct {
 
 // ListBlockContactsResponseV2 查询黑名单列表响应
 type ListBlockContactsResponseV2 struct {
-	HasMore   bool     `json:"has_more,omitempty"`   // 是否有更多数据
+	HasMore   *bool    `json:"has_more,omitempty"`   // 是否有更多数据
 	NextToken string   `json:"next_token,omitempty"` // 下一页标记
 	Items     []string `json:"items,omitempty"`      // 黑名单联系人账号ID列表
 }

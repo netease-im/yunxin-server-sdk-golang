@@ -40,7 +40,7 @@ func (m *MessageV2ServiceImpl) StreamMessage(req *StreamMessageRequestV2) (*core
 		return nil, err
 	}
 
-	apiResponse, err := m.httpClient.ExecuteV2Api(http.POST, StreamMessage, pathParams, nil, string(requestBody))
+	apiResponse, err := m.httpClient.ExecuteV2Api(http.POST, StreamMessageURL, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (m *MessageV2ServiceImpl) WithdrawMessage(req *WithdrawMessageRequestV2) (*
 	}
 
 	queryParams := map[string]string{
-		"type": strconv.Itoa(req.Type),
+		"type": strconv.Itoa(*req.Type),
 	}
 
 	if req.ServerExtension != "" {
@@ -111,7 +111,7 @@ func (m *MessageV2ServiceImpl) DeleteConversationMessages(req *DeleteConversatio
 	}
 
 	queryParams := map[string]string{
-		"delete_type": strconv.Itoa(req.DeleteType),
+		"type": strconv.Itoa(*req.DeleteType),
 	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.DELETE, DeleteConversationMessages, pathParams, queryParams, "")
@@ -155,10 +155,12 @@ func (m *MessageV2ServiceImpl) SendTeamReadReceipt(req *SendTeamReadReceiptReque
 // QueryTeamReadReceipt 查询群消息已读回执详情
 func (m *MessageV2ServiceImpl) QueryTeamReadReceipt(req *QueryTeamReadReceiptRequestV2) (*core.Result[*QueryTeamReadReceiptResponseV2], error) {
 	queryParams := map[string]string{
-		"send_account_id":   req.SendAccountId,
-		"team_id":           req.TeamId,
-		"message_server_id": req.MessageServerId,
-		"include_account":   fmt.Sprintf("%t", req.IncludeAccount),
+		"team_id":           strconv.FormatInt(req.TeamId, 10),
+		"message_server_id": strconv.FormatInt(req.MessageServerId, 10),
+	}
+
+	if req.IncludeAccount != nil {
+		queryParams["include_account"] = fmt.Sprintf("%t", *req.IncludeAccount)
 	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.GET, QueryTeamReadReceipt, nil, queryParams, "")
@@ -173,7 +175,7 @@ func (m *MessageV2ServiceImpl) QueryTeamReadReceipt(req *QueryTeamReadReceiptReq
 func (m *MessageV2ServiceImpl) QueryMessage(req *QueryMessageRequestV2) (*core.Result[*QueryMessageResponseV2], error) {
 	pathParams := map[string]string{
 		"conversation_id":   req.ConversationId,
-		"message_server_id": req.MessageServerId,
+		"message_server_id": strconv.FormatInt(req.MessageServerId, 10),
 	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.GET, QueryMessage, pathParams, nil, "")
@@ -186,30 +188,44 @@ func (m *MessageV2ServiceImpl) QueryMessage(req *QueryMessageRequestV2) (*core.R
 
 // SearchMessages 搜索历史消息
 func (m *MessageV2ServiceImpl) SearchMessages(req *SearchMessagesRequestV2) (*core.Result[*SearchMessagesResponseV2], error) {
-	queryParams := map[string]string{}
-
-	if req.SendAccountId != "" {
-		queryParams["send_account_id"] = req.SendAccountId
+	queryParams := map[string]string{
+		"operator_id": req.OperatorId, // Required parameter
 	}
+
 	if req.ConversationId != "" {
 		queryParams["conversation_id"] = req.ConversationId
 	}
-	if req.MsgType > 0 {
-		queryParams["msg_type"] = strconv.Itoa(req.MsgType)
+	if len(req.KeywordList) > 0 {
+		// Serialize keyword_list as JSON array string
+		keywordListBytes, err := json.Marshal(req.KeywordList)
+		if err == nil {
+			queryParams["keyword_list"] = string(keywordListBytes)
+		}
 	}
-	if req.Keyword != "" {
-		queryParams["keyword"] = req.Keyword
+	if req.SenderAccountIds != "" {
+		queryParams["sender_account_ids"] = req.SenderAccountIds
 	}
-	if req.BeginTime > 0 {
-		queryParams["begin_time"] = strconv.FormatInt(req.BeginTime, 10)
+	if req.MessageTypes != "" {
+		queryParams["message_types"] = req.MessageTypes
 	}
-	if req.EndTime > 0 {
-		queryParams["end_time"] = strconv.FormatInt(req.EndTime, 10)
+	if req.MessageSubTypes != "" {
+		queryParams["message_sub_types"] = req.MessageSubTypes
 	}
-	if req.Limit > 0 {
-		queryParams["limit"] = strconv.Itoa(req.Limit)
+	if req.KeywordMatchType != nil {
+		queryParams["keyword_match_type"] = strconv.Itoa(*req.KeywordMatchType)
 	}
-	queryParams["reverse"] = fmt.Sprintf("%t", req.Reverse)
+	if req.StartTime > 0 {
+		queryParams["start_time"] = strconv.FormatInt(req.StartTime, 10)
+	}
+	if req.TimePeriod > 0 {
+		queryParams["time_period"] = strconv.FormatInt(req.TimePeriod, 10)
+	}
+	if req.Limit != nil && *req.Limit > 0 {
+		queryParams["limit"] = strconv.Itoa(*req.Limit)
+	}
+	if req.PageToken != "" {
+		queryParams["page_token"] = req.PageToken
+	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.GET, SearchMessages, nil, queryParams, "")
 	if err != nil {
@@ -229,11 +245,16 @@ func (m *MessageV2ServiceImpl) QueryMessagesByPage(req *QueryMessagesByPageReque
 		"begin_time": strconv.FormatInt(req.BeginTime, 10),
 		"end_time":   strconv.FormatInt(req.EndTime, 10),
 		"limit":      strconv.Itoa(req.Limit),
-		"reverse":    fmt.Sprintf("%t", req.Reverse),
 	}
 
-	if req.MsgTypes != "" {
-		queryParams["msg_types"] = req.MsgTypes
+	if req.Descending != nil {
+		queryParams["descending"] = fmt.Sprintf("%t", *req.Descending)
+	}
+	if req.MessageType != "" {
+		queryParams["message_type"] = req.MessageType
+	}
+	if req.PageToken != "" {
+		queryParams["page_token"] = req.PageToken
 	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.GET, QueryConversationMessages, pathParams, queryParams, "")
@@ -266,13 +287,25 @@ func (m *MessageV2ServiceImpl) BatchQueryMessages(req *BatchQueryMessagesByIdReq
 // QueryThreadMessages 查询Thread消息
 func (m *MessageV2ServiceImpl) QueryThreadMessages(req *QueryThreadMessagesRequestV2) (*core.Result[*QueryThreadMessagesResponseV2], error) {
 	queryParams := map[string]string{
-		"thread_root":     req.ThreadRoot,
-		"conversation_id": req.ConversationId,
-		"begin_time":      strconv.FormatInt(req.BeginTime, 10),
-		"end_time":        strconv.FormatInt(req.EndTime, 10),
-		"limit":           strconv.Itoa(req.Limit),
-		"reverse":         fmt.Sprintf("%t", req.Reverse),
-		"exclude_root":    fmt.Sprintf("%t", req.ExcludeRoot),
+		"begin_time":             strconv.FormatInt(req.BeginTime, 10),
+		"end_time":               strconv.FormatInt(req.EndTime, 10),
+		"limit":                  strconv.Itoa(req.Limit),
+		"conversation_type":      strconv.Itoa(req.ConversationType),
+		"sender_id":              req.SenderId,
+		"receiver_id":            req.ReceiverId,
+		"root_message_id":        strconv.FormatInt(req.RootMessageId, 10),
+		"root_message_client_id": req.RootMessageClientId,
+		"root_message_time":      strconv.FormatInt(req.RootMessageTime, 10),
+	}
+
+	if req.Descending != nil {
+		queryParams["descending"] = fmt.Sprintf("%t", *req.Descending)
+	}
+	if req.ExcludeRoot != nil {
+		queryParams["exclude_root"] = fmt.Sprintf("%t", *req.ExcludeRoot)
+	}
+	if req.PageToken != "" {
+		queryParams["page_token"] = req.PageToken
 	}
 
 	apiResponse, err := m.httpClient.ExecuteV2Api(http.GET, QueryThreadMessages, nil, queryParams, "")
@@ -300,14 +333,12 @@ func (m *MessageV2ServiceImpl) AddQuickComment(req *AddQuickCommentRequestV2) (*
 
 // DeleteQuickComment 删除快捷评论
 func (m *MessageV2ServiceImpl) DeleteQuickComment(req *DeleteQuickCommentRequestV2) (*core.Result[*DeleteQuickCommentResponseV2], error) {
-	queryParams := map[string]string{
-		"operator_account_id": req.OperatorAccountId,
-		"conversation_id":     req.ConversationId,
-		"message_server_id":   req.MessageServerId,
-		"comment_idx":         strconv.Itoa(req.CommentIdx),
+	requestBody, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
 
-	apiResponse, err := m.httpClient.ExecuteV2Api(http.DELETE, DeleteQuickComment, nil, queryParams, "")
+	apiResponse, err := m.httpClient.ExecuteV2Api(http.DELETE, DeleteQuickComment, nil, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}

@@ -59,9 +59,34 @@ func (s *SpecialRelationV1ServiceImpl) ListSpecialRelation(req *ListSpecialRelat
 	}
 
 	resp := &ListSpecialRelationResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析mutelist和blacklist（JSON字符串）
+	if mutelistVal, ok := jsonObj["mutelist"]; ok && mutelistVal != nil {
+		var mutelistStr string
+		if mutelistStrVal, ok := mutelistVal.(string); ok {
+			mutelistStr = mutelistStrVal
+		} else {
+			mutelistJson, _ := json.Marshal(mutelistVal)
+			mutelistStr = string(mutelistJson)
+		}
+		if mutelistStr != "" {
+			var mutelist []string
+			json.Unmarshal([]byte(mutelistStr), &mutelist)
+			resp.Mutelist = mutelist
+		}
+	}
+	if blacklistVal, ok := jsonObj["blacklist"]; ok && blacklistVal != nil {
+		var blacklistStr string
+		if blacklistStrVal, ok := blacklistVal.(string); ok {
+			blacklistStr = blacklistStrVal
+		} else {
+			blacklistJson, _ := json.Marshal(blacklistVal)
+			blacklistStr = string(blacklistJson)
+		}
+		if blacklistStr != "" {
+			var blacklist []string
+			json.Unmarshal([]byte(blacklistStr), &blacklist)
+			resp.Blacklist = blacklist
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
