@@ -31,7 +31,7 @@ type GetFriendResponseV2 struct {
 
 // ListFriendsResponseV2 列出好友响应
 type ListFriendsResponseV2 struct {
-	HasMore   bool           `json:"has_more,omitempty"`   // 是否有更多数据
+	HasMore   *bool          `json:"has_more,omitempty"`   // 是否有更多数据
 	NextToken string         `json:"next_token,omitempty"` // 下一页token
 	Items     []FriendItemV2 `json:"items,omitempty"`      // 好友列表
 	Total     int            `json:"total,omitempty"`      // 总数

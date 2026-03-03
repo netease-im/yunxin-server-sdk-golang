@@ -3,11 +3,17 @@ package team_member
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core/http"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/im/v2/util"
 )
+
+// joinStringSlice joins a string slice with a separator
+func joinStringSlice(slice []string, sep string) string {
+	return strings.Join(slice, sep)
+}
 
 // InviteTeamMembers 邀请成员加入群组
 func (s *TeamMemberV2ServiceImpl) InviteTeamMembers(req *InviteTeamMembersRequestV2) (*core.Result[*InviteTeamMembersResponseV2], error) {
@@ -26,12 +32,19 @@ func (s *TeamMemberV2ServiceImpl) InviteTeamMembers(req *InviteTeamMembersReques
 
 // KickTeamMembers 踢出群成员
 func (s *TeamMemberV2ServiceImpl) KickTeamMembers(req *KickTeamMembersRequestV2) (*core.Result[*KickTeamMembersResponseV2], error) {
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	// Use query parameters for DELETE request
+	queryParams := map[string]string{
+		"operator_id":      req.OperatorId,
+		"team_id":          strconv.FormatInt(req.TeamId, 10),
+		"team_type":        strconv.Itoa(*req.TeamType),
+		"kick_account_ids": joinStringSlice(req.KickAccountIds, ","),
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, KickTeamMembers, nil, nil, string(requestBody))
+	if req.Extension != "" {
+		queryParams["extension"] = req.Extension
+	}
+
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.DELETE, KickTeamMembers, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -41,12 +54,18 @@ func (s *TeamMemberV2ServiceImpl) KickTeamMembers(req *KickTeamMembersRequestV2)
 
 // LeaveTeam 退出群组
 func (s *TeamMemberV2ServiceImpl) LeaveTeam(req *LeaveTeamRequestV2) (*core.Result[*LeaveTeamResponseV2], error) {
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	// Use query parameters for DELETE request
+	queryParams := map[string]string{
+		"account_id": req.AccountId,
+		"team_id":    strconv.FormatInt(req.TeamId, 10),
+		"team_type":  strconv.Itoa(*req.TeamType),
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, LeaveTeam, nil, nil, string(requestBody))
+	if req.Extension != "" {
+		queryParams["extension"] = req.Extension
+	}
+
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.DELETE, LeaveTeam, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +84,7 @@ func (s *TeamMemberV2ServiceImpl) UpdateTeamMember(req *UpdateTeamMemberRequestV
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.PUT, UpdateTeamMember, pathParams, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.PATCH, UpdateTeamMember, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +99,7 @@ func (s *TeamMemberV2ServiceImpl) BatchMuteTeamMembers(req *BatchMuteTeamMembers
 		return nil, err
 	}
 
-	apiResponse, err := s.httpClient.ExecuteV2Api(http.POST, BatchMuteTeamMembers, nil, nil, string(requestBody))
+	apiResponse, err := s.httpClient.ExecuteV2Api(http.PATCH, BatchMuteTeamMembers, nil, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +114,7 @@ func (s *TeamMemberV2ServiceImpl) QueryJoinedTeams(req *QueryJoinedTeamsRequestV
 	}
 
 	queryParams := map[string]string{
-		"team_type": strconv.Itoa(req.TeamType),
+		"team_type": strconv.Itoa(*req.TeamType),
 	}
 
 	if req.PageToken != "" {
@@ -104,8 +123,8 @@ func (s *TeamMemberV2ServiceImpl) QueryJoinedTeams(req *QueryJoinedTeamsRequestV
 	if req.Limit > 0 {
 		queryParams["limit"] = strconv.Itoa(req.Limit)
 	}
-	if req.NeedReturnMemberInfo > 0 {
-		queryParams["need_return_member_info"] = strconv.Itoa(req.NeedReturnMemberInfo)
+	if req.NeedReturnMemberInfo != nil && *req.NeedReturnMemberInfo > 0 {
+		queryParams["need_return_member_info"] = strconv.Itoa(*req.NeedReturnMemberInfo)
 	}
 
 	apiResponse, err := s.httpClient.ExecuteV2Api(http.GET, JoinedTeams, pathParams, queryParams, "")

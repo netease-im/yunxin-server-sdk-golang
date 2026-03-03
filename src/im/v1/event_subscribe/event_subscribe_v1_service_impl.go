@@ -31,9 +31,12 @@ func (s *EventSubscribeV1ServiceImpl) AddEventSubscribe(req *AddEventSubscribeRe
 	}
 
 	resp := &AddEventSubscribeResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析failedAccid
+	if failedAccidVal, ok := jsonObj["failedAccid"]; ok && failedAccidVal != nil {
+		failedAccidJson, _ := json.Marshal(failedAccidVal)
+		var failedAccidList []string
+		json.Unmarshal(failedAccidJson, &failedAccidList)
+		resp.FailedAccid = failedAccidList
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -63,9 +66,20 @@ func (s *EventSubscribeV1ServiceImpl) QueryEventSubscribe(req *QueryEventSubscri
 	}
 
 	resp := &QueryEventSubscribeResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析subscribes（JSON字符串）
+	if subscribesVal, ok := jsonObj["subscribes"]; ok && subscribesVal != nil {
+		var subscribesStr string
+		if subscribesStrVal, ok := subscribesVal.(string); ok {
+			subscribesStr = subscribesStrVal
+		} else {
+			subscribesJson, _ := json.Marshal(subscribesVal)
+			subscribesStr = string(subscribesJson)
+		}
+		if subscribesStr != "" {
+			var subscribes []Subscription
+			json.Unmarshal([]byte(subscribesStr), &subscribes)
+			resp.Subscribes = subscribes
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -95,9 +109,12 @@ func (s *EventSubscribeV1ServiceImpl) DeleteEventSubscribe(req *DeleteEventSubsc
 	}
 
 	resp := &DeleteEventSubscribeResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析failedAccid
+	if failedAccidVal, ok := jsonObj["failedAccid"]; ok && failedAccidVal != nil {
+		failedAccidJson, _ := json.Marshal(failedAccidVal)
+		var failedAccidList []string
+		json.Unmarshal(failedAccidJson, &failedAccidList)
+		resp.FailedAccid = failedAccidList
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

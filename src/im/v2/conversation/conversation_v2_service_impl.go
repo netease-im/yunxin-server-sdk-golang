@@ -67,7 +67,7 @@ func (c *ConversationV2ServiceImpl) DeleteConversation(req *DeleteConversationRe
 	}
 
 	queryParams := make(map[string]string)
-	if req.ClearMessage {
+	if req.ClearMessage != nil && *req.ClearMessage {
 		queryParams["clear_message"] = "true"
 	}
 
@@ -89,7 +89,7 @@ func (c *ConversationV2ServiceImpl) BatchDeleteConversations(req *BatchDeleteCon
 	queryParams := map[string]string{
 		"conversation_ids": strings.Join(req.ConversationIds, ","),
 	}
-	if req.ClearMessage {
+	if req.ClearMessage != nil && *req.ClearMessage {
 		queryParams["clear_message"] = "true"
 	}
 

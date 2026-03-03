@@ -30,7 +30,8 @@ type ChangeOwnerTeamResponseV1 struct {
 
 // CreateTeamResponseV1 CreateTeam响应
 type CreateTeamResponseV1 struct {
-	Tid int64 `json:"tid,omitempty"`
+	Tid    int64          `json:"tid,omitempty"`
+	Faccid TeamFailAccids `json:"faccid,omitempty"`
 }
 
 // TeamFailAccids TeamFailAccids

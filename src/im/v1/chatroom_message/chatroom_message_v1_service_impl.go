@@ -31,9 +31,11 @@ func (c *ChatroomMessageV1ServiceImpl) SendMsg(req *SendChatroomMsgRequestV1) (*
 	}
 
 	resp := &SendChatroomMsgResponseV1{}
+	// 按照 Java SDK 标准：从desc字段解析（desc是JSON字符串）
 	if descVal, ok := jsonObj["desc"]; ok {
-		descJson, _ := json.Marshal(descVal)
-		json.Unmarshal(descJson, resp)
+		if descStr, ok := descVal.(string); ok {
+			json.Unmarshal([]byte(descStr), resp)
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

@@ -9,20 +9,20 @@ type FailedOperation struct {
 
 // TeamConfiguration 群组配置
 type TeamConfiguration struct {
-	JoinMode            int `json:"join_mode"`             // 加入群组权限
-	AgreeMode           int `json:"agree_mode"`            // 邀请他人权限
-	InviteMode          int `json:"invite_mode"`           // 邀请他人需要被邀请人同意模式
-	UpdateTeamInfoMode  int `json:"update_team_info_mode"` // 群资料修改权限
-	UpdateExtensionMode int `json:"update_extension_mode"` // 群扩展字段修改权限
+	JoinMode            *int `json:"join_mode"`             // 加入群组权限
+	AgreeMode           *int `json:"agree_mode"`            // 邀请他人权限
+	InviteMode          *int `json:"invite_mode"`           // 邀请他人需要被邀请人同意模式
+	UpdateTeamInfoMode  *int `json:"update_team_info_mode"` // 群资料修改权限
+	UpdateExtensionMode *int `json:"update_extension_mode"` // 群扩展字段修改权限
 }
 
 // MemberInfo 成员信息
 type MemberInfo struct {
 	AccountId          string `json:"account_id"`           // 账号ID
-	TeamMemberType     int    `json:"team_member_type"`     // 成员类型
+	TeamMemberType     *int   `json:"team_member_type"`     // 成员类型
 	TeamNick           string `json:"team_nick"`            // 群昵称
-	ChatBanned         bool   `json:"chat_banned"`          // 是否禁言
-	MessageNotifyState int    `json:"message_notify_state"` // 消息通知状态
+	ChatBanned         *bool  `json:"chat_banned"`          // 是否禁言
+	MessageNotifyState *int   `json:"message_notify_state"` // 消息通知状态
 	JoinTime           int64  `json:"join_time"`            // 加入时间
 	Extension          string `json:"extension"`            // 自定义扩展字段
 	ServerExtension    string `json:"server_extension"`     // 服务端扩展字段
@@ -34,7 +34,7 @@ type JoinedTeamInfo struct {
 	OwnerAccountId string             `json:"owner_account_id"`        // 群主账号ID
 	Name           string             `json:"name"`                    // 群名称
 	Icon           string             `json:"icon"`                    // 群头像URL
-	MemberCount    int                `json:"member_count"`            // 群成员数量
+	MemberCount    *int               `json:"member_count"`            // 群成员数量
 	MembersLimit   int                `json:"members_limit"`           // 群成员人数上限
 	CreateTime     int64              `json:"create_time"`             // 创建时间
 	UpdateTime     int64              `json:"update_time"`             // 更新时间
@@ -72,7 +72,7 @@ type BatchMuteTeamMembersResponseV2 struct {
 
 // QueryJoinedTeamsResponseV2 查询用户已加入的群组响应
 type QueryJoinedTeamsResponseV2 struct {
-	HasMore      bool             `json:"has_more"`       // 是否有更多数据
+	HasMore      *bool            `json:"has_more"`       // 是否有更多数据
 	NextToken    string           `json:"next_token"`     // 下一页token
 	TeamInfoList []JoinedTeamInfo `json:"team_info_list"` // 群组信息列表
 }

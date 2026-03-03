@@ -26,8 +26,8 @@ type UpdateChatroomQueueResponseV2 struct {
 // DeleteChatroomQueueResponseV2 删除聊天室队列响应
 type DeleteChatroomQueueResponseV2 struct {
 	RoomId       int64 `json:"room_id,omitempty"`       // 聊天室ID
-	QueueSize    int   `json:"queue_size,omitempty"`    // 队列大小
-	HighPriority int   `json:"high_priority,omitempty"` // 高优先级
+	QueueSize    *int  `json:"queue_size,omitempty"`    // 队列大小
+	HighPriority *int  `json:"high_priority,omitempty"` // 高优先级
 }
 
 // PollChatroomQueueElementResponseV2 轮询聊天室队列元素响应
@@ -35,7 +35,7 @@ type PollChatroomQueueElementResponseV2 struct {
 	ElementKey       string `json:"element_key,omitempty"`        // 元素键
 	ElementValue     string `json:"element_value,omitempty"`      // 元素值
 	ElementAccountId string `json:"element_account_id,omitempty"` // 元素账号ID
-	ElementTransient bool   `json:"element_transient,omitempty"`  // 元素是否临时
+	ElementTransient *bool  `json:"element_transient,omitempty"`  // 元素是否临时
 }
 
 // QueueElementResponse 队列元素响应
@@ -43,7 +43,7 @@ type QueueElementResponse struct {
 	ElementKey       string `json:"element_key,omitempty"`        // 元素键
 	ElementValue     string `json:"element_value,omitempty"`      // 元素值
 	ElementAccountId string `json:"element_account_id,omitempty"` // 元素账号ID
-	ElementTransient bool   `json:"element_transient,omitempty"`  // 元素是否临时
+	ElementTransient *bool  `json:"element_transient,omitempty"`  // 元素是否临时
 	CreateTime       int64  `json:"create_time,omitempty"`        // 创建时间
 	UpdateTime       int64  `json:"update_time,omitempty"`        // 更新时间
 }

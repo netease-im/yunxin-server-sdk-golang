@@ -31,9 +31,11 @@ func (s *SystemNotificationV1ServiceImpl) SendAttachMsg(req *SendAttachMsgReques
 	}
 
 	resp := &SendAttachMsgResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析desc字段
+	if descVal, ok := jsonObj["desc"]; ok && descVal != nil {
+		if descStr, ok := descVal.(string); ok {
+			resp.Desc = descStr
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -63,9 +65,20 @@ func (s *SystemNotificationV1ServiceImpl) SendBatchAttachMsg(req *SendBatchAttac
 	}
 
 	resp := &SendBatchAttachMsgResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：从根对象解析unregister字段（JSON字符串）
+	if unregisterVal, ok := jsonObj["unregister"]; ok && unregisterVal != nil {
+		var unregisterStr string
+		if unregisterStrVal, ok := unregisterVal.(string); ok {
+			unregisterStr = unregisterStrVal
+		} else {
+			unregisterJson, _ := json.Marshal(unregisterVal)
+			unregisterStr = string(unregisterJson)
+		}
+		if unregisterStr != "" {
+			var unregisterList []string
+			json.Unmarshal([]byte(unregisterStr), &unregisterList)
+			resp.Unregister = unregisterList
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

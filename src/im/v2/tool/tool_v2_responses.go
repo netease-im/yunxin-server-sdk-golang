@@ -7,5 +7,7 @@ type AsrResponseV2 struct {
 
 // TranslateTextResponseV2 文本翻译响应
 type TranslateTextResponseV2 struct {
-	TargetText string `json:"target_text"` // 翻译后的文本
+	TranslatedText string `json:"translated_text"` // 翻译后的文本
+	SourceLanguage string `json:"source_language"` // 源语言
+	TargetLanguage string `json:"target_language"` // 目标语言
 }

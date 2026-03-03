@@ -38,7 +38,7 @@ func (c *ConversationUnreadV2ServiceImpl) ClearConversationUnread(req *ClearConv
 		"conversation_id": req.ConversationId,
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.POST, ClearConversationUnread, pathParams, nil, "")
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.PATCH, ClearConversationUnread, pathParams, nil, "")
 	if err != nil {
 		return nil, err
 	}

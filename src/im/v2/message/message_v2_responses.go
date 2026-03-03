@@ -1,37 +1,69 @@
 package message
 
-// Message 消息信息
-type Message struct {
-	MessageServerId string      `json:"message_server_id"` // 消息服务端ID
-	ConversationId  string      `json:"conversation_id"`   // 会话ID
-	FromAccountId   string      `json:"from_account_id"`   // 发送者账号ID
-	MsgType         int         `json:"msg_type"`          // 消息类型
-	Body            interface{} `json:"body"`              // 消息体
-	Timestamp       int64       `json:"timestamp"`         // 时间戳
-	ServerExtension string      `json:"server_extension"`  // 服务端扩展字段
-}
-
 // SendMessageResponseV2 发送消息响应
 type SendMessageResponseV2 struct {
-	Message
+	MessageServerId  int64             `json:"message_server_id"` // 消息服务端ID
+	MessageClientId  string            `json:"message_client_id"` // 客户端消息ID
+	SenderId         string            `json:"sender_id"`         // 发送者ID
+	ConversationType *int              `json:"conversation_type"` // 会话类型
+	ReceiverId       string            `json:"receiver_id"`       // 接收者ID
+	CreateTime       int64             `json:"create_time"`       // 创建时间
+	MessageType      *int              `json:"message_type"`      // 消息类型
+	SubType          *int              `json:"sub_type"`          // 子类型
+	Text             string            `json:"text"`              // 文本内容
+	Attachment       interface{}       `json:"attachment"`        // 附件
+	ThreadConfig     *ThreadConfigResp `json:"thread_config"`     // Thread配置
+}
+
+// ThreadConfigResp Thread配置响应
+type ThreadConfigResp struct {
+	ThreadRoot  *ThreadMessageResp `json:"thread_root"`  // Thread根消息
+	ThreadReply *ThreadMessageResp `json:"thread_reply"` // 回复消息
+}
+
+// ThreadMessageResp Thread消息响应
+type ThreadMessageResp struct {
+	SenderId        string `json:"sender_id"`         // 发送者ID
+	ReceiverId      string `json:"receiver_id"`       // 接收者ID
+	CreateTime      int64  `json:"create_time"`       // 创建时间
+	MessageServerId int64  `json:"message_server_id"` // 消息服务端ID
+	MessageClientId string `json:"message_client_id"` // 客户端消息ID
+}
+
+// StreamMessageResponseV2 流式消息响应
+type StreamMessageResponseV2 struct {
+	MessageServerId int64 `json:"message_server_id"` // 消息服务端ID
 }
 
 // BatchSendP2PMessageResponseV2 批量发送点对点消息响应
 type BatchSendP2PMessageResponseV2 struct {
-	SuccessList []Message    `json:"success_list"` // 成功列表
-	FailedList  []FailedSend `json:"failed_list"`  // 失败列表
+	SuccessList []SuccessItem `json:"success_list"` // 成功列表
+	FailedList  []FailedSend  `json:"failed_list"`  // 失败列表
+}
+
+// SuccessItem 批量发送成功项
+type SuccessItem struct {
+	MessageServerId int64       `json:"message_server_id"` // 消息服务端ID
+	MessageClientId string      `json:"message_client_id"` // 客户端消息ID
+	SenderId        string      `json:"sender_id"`         // 发送者ID
+	ReceiverId      string      `json:"receiver_id"`       // 接收者ID
+	CreateTime      int64       `json:"create_time"`       // 创建时间
+	MessageType     *int        `json:"message_type"`      // 消息类型
+	SubType         *int        `json:"sub_type"`          // 子类型
+	Text            string      `json:"text"`              // 文本内容
+	Attachment      interface{} `json:"attachment"`        // 附件
 }
 
 // FailedSend 发送失败信息
 type FailedSend struct {
-	AccountId string `json:"account_id"` // 账号ID
-	ErrorCode int    `json:"error_code"` // 错误码
-	ErrorMsg  string `json:"error_msg"`  // 错误信息
+	ReceiverId string `json:"receiver_id"` // 接收者ID
+	ErrorCode  int    `json:"error_code"`  // 错误码
+	ErrorMsg   string `json:"error_msg"`   // 错误信息
 }
 
 // ModifyMessageResponseV2 修改消息响应
 type ModifyMessageResponseV2 struct {
-	Message
+	// API返回的data为空对象 {}，无需任何字段
 }
 
 // WithdrawMessageResponseV2 撤回消息响应
@@ -51,15 +83,8 @@ type SendP2PReadReceiptResponseV2 struct {
 
 // SendTeamReadReceiptResponseV2 发送群消息已读回执响应
 type SendTeamReadReceiptResponseV2 struct {
-	SuccessList []string        `json:"success_list"` // 成功的消息ID列表
-	FailedList  []FailedReceipt `json:"failed_list"`  // 失败列表
-}
-
-// FailedReceipt 回执失败信息
-type FailedReceipt struct {
-	MessageServerId string `json:"message_server_id"` // 消息服务端ID
-	ErrorCode       int    `json:"error_code"`        // 错误码
-	ErrorMsg        string `json:"error_msg"`         // 错误信息
+	SuccessList []int64 `json:"success_list"` // 成功的消息ID列表
+	FailedList  []int64 `json:"failed_list"`  // 失败的消息ID列表
 }
 
 // QueryTeamReadReceiptResponseV2 查询群消息已读回执详情响应
@@ -70,80 +95,116 @@ type QueryTeamReadReceiptResponseV2 struct {
 	UnreadAccounts []string `json:"unread_accounts"` // 未读账号列表
 }
 
-// StreamMessageResponseV2 流式消息响应
-type StreamMessageResponseV2 struct {
-	Message
-}
-
 // QueryMessageResponseV2 查询单条消息响应
 type QueryMessageResponseV2 struct {
-	Message
+	MessageServerId int64       `json:"message_server_id"` // 消息服务端ID
+	MessageClientId string      `json:"message_client_id"` // 客户端消息ID
+	ConversationId  string      `json:"conversation_id"`   // 会话ID
+	SenderId        string      `json:"sender_id"`         // 发送者ID
+	ReceiverId      string      `json:"receiver_id"`       // 接收者ID
+	CreateTime      int64       `json:"create_time"`       // 创建时间
+	MessageType     *int        `json:"message_type"`      // 消息类型
+	SubType         *int        `json:"sub_type"`          // 子类型
+	Text            string      `json:"text"`              // 文本内容
+	Attachment      interface{} `json:"attachment"`        // 附件
+	ServerExtension string      `json:"server_extension"`  // 服务端扩展
 }
 
 // SearchMessagesResponseV2 搜索历史消息响应
 type SearchMessagesResponseV2 struct {
-	Messages []Message `json:"messages"` // 消息列表
+	Count     *int          `json:"count"`      // 消息总数
+	Items     []MessageItem `json:"items"`      // 消息列表
+	HasMore   *bool         `json:"has_more"`   // 是否有更多
+	NextToken string        `json:"next_token"` // 下一页token
+}
+
+// MessageItem 消息项
+type MessageItem struct {
+	MessageServerId int64       `json:"message_server_id"` // 消息服务端ID
+	MessageClientId string      `json:"message_client_id"` // 客户端消息ID
+	ConversationId  string      `json:"conversation_id"`   // 会话ID
+	SenderId        string      `json:"sender_id"`         // 发送者ID
+	ReceiverId      string      `json:"receiver_id"`       // 接收者ID
+	CreateTime      int64       `json:"create_time"`       // 创建时间
+	MessageType     *int        `json:"message_type"`      // 消息类型
+	SubType         *int        `json:"sub_type"`          // 子类型
+	Text            string      `json:"text"`              // 文本内容
+	Attachment      interface{} `json:"attachment"`        // 附件
 }
 
 // QueryMessagesByPageResponseV2 分页查询会话消息响应
 type QueryMessagesByPageResponseV2 struct {
-	Messages []Message `json:"messages"` // 消息列表
+	Items     []MessageItem `json:"items"`      // 消息列表
+	HasMore   *bool         `json:"has_more"`   // 是否有更多
+	NextToken string        `json:"next_token"` // 下一页token
 }
 
 // BatchQueryMessagesByIdResponseV2 批量查询消息响应
 type BatchQueryMessagesByIdResponseV2 struct {
-	SuccessList []Message     `json:"success_list"` // 成功列表
-	FailedList  []FailedQuery `json:"failed_list"`  // 失败列表
+	SuccessList []SuccessMessage `json:"success_list"` // 成功列表
+	FailedList  []FailedMessage  `json:"failed_list"`  // 失败列表
 }
 
-// FailedQuery 查询失败信息
-type FailedQuery struct {
-	MessageServerId string `json:"message_server_id"` // 消息服务端ID
+// SuccessMessage 成功查询的消息
+type SuccessMessage struct {
+	MessageServerId int64       `json:"message_server_id"` // 消息服务端ID
+	MessageClientId string      `json:"message_client_id"` // 客户端消息ID
+	ConversationId  string      `json:"conversation_id"`   // 会话ID
+	SenderId        string      `json:"sender_id"`         // 发送者ID
+	ReceiverId      string      `json:"receiver_id"`       // 接收者ID
+	CreateTime      int64       `json:"create_time"`       // 创建时间
+	MessageType     *int        `json:"message_type"`      // 消息类型
+	SubType         *int        `json:"sub_type"`          // 子类型
+	Text            string      `json:"text"`              // 文本内容
+	Attachment      interface{} `json:"attachment"`        // 附件
+}
+
+// FailedMessage 失败查询的消息
+type FailedMessage struct {
+	MessageServerId int64  `json:"message_server_id"` // 消息服务端ID
+	CreateTime      int64  `json:"create_time"`       // 创建时间
 	ErrorCode       int    `json:"error_code"`        // 错误码
 	ErrorMsg        string `json:"error_msg"`         // 错误信息
 }
 
 // QueryThreadMessagesResponseV2 查询Thread消息响应
 type QueryThreadMessagesResponseV2 struct {
-	Messages []Message `json:"messages"` // 消息列表
+	ThreadRoot *MessageItem  `json:"thread_root"` // Thread根消息
+	Total      *int          `json:"total"`       // 总数
+	Messages   []MessageItem `json:"messages"`    // 消息列表
+	HasMore    *bool         `json:"has_more"`    // 是否有更多
+	NextToken  string        `json:"next_token"`  // 下一页token
 }
 
 // AddQuickCommentResponseV2 添加快捷评论响应
 type AddQuickCommentResponseV2 struct {
-	CommentId string `json:"comment_id"` // 评论ID
-	Timestamp int64  `json:"timestamp"`  // 时间戳
+	// API返回的data为空对象 {}，无需任何字段
 }
 
 // DeleteQuickCommentResponseV2 删除快捷评论响应
 type DeleteQuickCommentResponseV2 struct {
-	Timestamp int64 `json:"timestamp"` // 时间戳
+	// API返回的data为空对象 {}，无需任何字段
 }
 
 // BatchQueryQuickCommentsResponseV2 批量查询快捷评论响应
 type BatchQueryQuickCommentsResponseV2 struct {
-	SuccessList []QuickCommentDetail `json:"success_list"` // 成功列表
-	FailedList  []FailedCommentQuery `json:"failed_list"`  // 失败列表
+	Items []QuickCommentItem `json:"items"` // 评论项列表
 }
 
-// QuickCommentDetail 快捷评论详情
-type QuickCommentDetail struct {
-	ConversationId  string    `json:"conversation_id"`   // 会话ID
-	MessageServerId string    `json:"message_server_id"` // 消息服务端ID
-	Comments        []Comment `json:"comments"`          // 评论列表
+// QuickCommentItem 快捷评论项
+type QuickCommentItem struct {
+	ConversationType int           `json:"conversation_type"` // 会话类型
+	SenderId         string        `json:"sender_id"`         // 发送者ID
+	ReceiverId       string        `json:"receiver_id"`       // 接收者ID
+	MessageServerId  int64         `json:"message_server_id"` // 消息服务端ID
+	CreateTime       int64         `json:"create_time"`       // 创建时间
+	Comments         []CommentInfo `json:"comments"`          // 评论列表
 }
 
-// Comment 评论信息
-type Comment struct {
-	CommentIdx      int    `json:"comment_idx"`      // 评论索引
-	AccountId       string `json:"account_id"`       // 账号ID
+// CommentInfo 评论信息
+type CommentInfo struct {
+	Type            int    `json:"type"`             // 评论类型
+	OperatorId      string `json:"operator_id"`      // 操作者ID
 	Timestamp       int64  `json:"timestamp"`        // 时间戳
-	ServerExtension string `json:"server_extension"` // 服务端扩展字段
-}
-
-// FailedCommentQuery 评论查询失败信息
-type FailedCommentQuery struct {
-	ConversationId  string `json:"conversation_id"`   // 会话ID
-	MessageServerId string `json:"message_server_id"` // 消息服务端ID
-	ErrorCode       int    `json:"error_code"`        // 错误码
-	ErrorMsg        string `json:"error_msg"`         // 错误信息
+	ServerExtension string `json:"server_extension"` // 服务端扩展
 }

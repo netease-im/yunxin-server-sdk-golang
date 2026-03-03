@@ -43,20 +43,20 @@ type QueueElement struct {
 	ElementKey       string `json:"element_key"`                  // 元素键
 	ElementValue     string `json:"element_value"`                // 元素值
 	ElementAccountId string `json:"element_account_id,omitempty"` // 元素账号ID
-	ElementTransient bool   `json:"element_transient,omitempty"`  // 元素是否临时
-	ElementAddPolicy int    `json:"element_add_policy,omitempty"` // 元素添加策略
+	ElementTransient *bool  `json:"element_transient,omitempty"`  // 元素是否临时
+	ElementAddPolicy *int   `json:"element_add_policy,omitempty"` // 元素添加策略
 }
 
 // NotificationConfig 通知配置
 type NotificationConfig struct {
-	NotificationEnabled   bool   `json:"notification_enabled,omitempty"`   // 是否启用通知
+	NotificationEnabled   *bool  `json:"notification_enabled,omitempty"`   // 是否启用通知
 	NotificationExtension string `json:"notification_extension,omitempty"` // 通知扩展字段
-	HighPriority          int    `json:"high_priority,omitempty"`          // 高优先级
-	HighPriorityPolicy    int    `json:"high_priority_policy,omitempty"`   // 高优先级策略
+	HighPriority          *int   `json:"high_priority,omitempty"`          // 高优先级
+	HighPriorityPolicy    *int   `json:"high_priority_policy,omitempty"`   // 高优先级策略
 }
 
 // RouteConfig 路由配置
 type RouteConfig struct {
-	RouteEnabled     bool   `json:"route_enabled,omitempty"`     // 是否启用路由
+	RouteEnabled     *bool  `json:"route_enabled,omitempty"`     // 是否启用路由
 	RouteEnvironment string `json:"route_environment,omitempty"` // 路由环境
 }

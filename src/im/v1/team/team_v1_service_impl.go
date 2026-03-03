@@ -2,6 +2,7 @@ package team
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core"
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core/utils"
@@ -31,9 +32,30 @@ func (s *TeamV1ServiceImpl) CreateTeam(req *CreateTeamRequestV1) (*core.Result[*
 	}
 
 	resp := &CreateTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：直接从根对象解析tid
+	if tidVal, ok := jsonObj["tid"]; ok && tidVal != nil {
+		if tidFloat, ok := tidVal.(float64); ok {
+			resp.Tid = int64(tidFloat)
+		} else if tidStr, ok := tidVal.(string); ok {
+			// tid可能是字符串类型
+			if tidInt, err := strconv.ParseInt(tidStr, 10, 64); err == nil {
+				resp.Tid = tidInt
+			}
+		}
+	}
+	// 按照 Java SDK 标准：从根对象的faccid对象解析
+	if faccidVal, ok := jsonObj["faccid"]; ok && faccidVal != nil {
+		if faccidMap, ok := faccidVal.(map[string]interface{}); ok {
+			if msgVal, ok := faccidMap["msg"]; ok {
+				resp.Faccid.Msg = msgVal.(string)
+			}
+			if accidVal, ok := faccidMap["accid"]; ok {
+				accidJson, _ := json.Marshal(accidVal)
+				var accidList []string
+				json.Unmarshal(accidJson, &accidList)
+				resp.Faccid.AccidList = accidList
+			}
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -63,9 +85,18 @@ func (s *TeamV1ServiceImpl) AddTeam(req *AddTeamRequestV1) (*core.Result[*AddTea
 	}
 
 	resp := &AddTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 从根对象提取faccid对象，然后提取其中的msg和accid字段
+	if faccidVal, ok := jsonObj["faccid"]; ok {
+		faccidMap := faccidVal.(map[string]interface{})
+		if msgVal, ok := faccidMap["msg"]; ok {
+			resp.Msg = msgVal.(string)
+		}
+		if accidVal, ok := faccidMap["accid"]; ok {
+			accidJson, _ := json.Marshal(accidVal)
+			var accids []string
+			json.Unmarshal(accidJson, &accids)
+			resp.Accids = accids
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -95,9 +126,18 @@ func (s *TeamV1ServiceImpl) KickTeam(req *KickTeamRequestV1) (*core.Result[*Kick
 	}
 
 	resp := &KickTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 从根对象提取faccid对象，然后提取其中的msg和accid字段
+	if faccidVal, ok := jsonObj["faccid"]; ok {
+		faccidMap := faccidVal.(map[string]interface{})
+		if msgVal, ok := faccidMap["msg"]; ok {
+			resp.Msg = msgVal.(string)
+		}
+		if accidVal, ok := faccidMap["accid"]; ok {
+			accidJson, _ := json.Marshal(accidVal)
+			var accids []string
+			json.Unmarshal(accidJson, &accids)
+			resp.Accid = accids
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -183,9 +223,39 @@ func (s *TeamV1ServiceImpl) QueryTeam(req *QueryTeamRequestV1) (*core.Result[*Qu
 	}
 
 	resp := &QueryTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：tinfos是JSON字符串，需要先解析成字符串再解析成数组
+	if tinfosVal, ok := jsonObj["tinfos"]; ok {
+		var tinfosStr string
+		if tinfosStrVal, ok := tinfosVal.(string); ok {
+			tinfosStr = tinfosStrVal
+		} else {
+			// 如果不是字符串，尝试marshal成字符串
+			tinfosJson, _ := json.Marshal(tinfosVal)
+			tinfosStr = string(tinfosJson)
+		}
+		if tinfosStr != "" {
+			var tinfosArray []map[string]interface{}
+			json.Unmarshal([]byte(tinfosStr), &tinfosArray)
+			var tinfos []TeamInfoV1
+			for _, itemMap := range tinfosArray {
+				var teamInfo TeamInfoV1
+				itemJson, _ := json.Marshal(itemMap)
+				json.Unmarshal(itemJson, &teamInfo)
+				// 特殊处理isNotifyCloseOnline和isNotifyClosePersistent字段
+				if val, ok := itemMap["isNotifyCloseOnline"]; ok {
+					if boolVal, ok := val.(bool); ok {
+						teamInfo.IsNotifyCloseOnline = boolVal
+					}
+				}
+				if val, ok := itemMap["isNotifyClosePersistent"]; ok {
+					if boolVal, ok := val.(bool); ok {
+						teamInfo.IsNotifyClosePersistent = boolVal
+					}
+				}
+				tinfos = append(tinfos, teamInfo)
+			}
+			resp.Tinfos = tinfos
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -215,9 +285,12 @@ func (s *TeamV1ServiceImpl) QueryTeamInfoDetails(req *QueryTeamInfoDetailsReques
 	}
 
 	resp := &QueryTeamInfoDetailsResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 响应包含tinfo字段，解析到resp.Tinfo
+	if tinfoVal, ok := jsonObj["tinfo"]; ok {
+		tinfoJson, _ := json.Marshal(tinfoVal)
+		var tinfo TeamInfo
+		json.Unmarshal(tinfoJson, &tinfo)
+		resp.Tinfo = tinfo
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -443,9 +516,20 @@ func (s *TeamV1ServiceImpl) QueryMuteTeamMembers(req *QueryMuteTeamMembersReques
 	}
 
 	resp := &QueryMuteTeamMembersResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：mutes是JSON字符串，需要先解析成字符串再解析成数组
+	if mutesVal, ok := jsonObj["mutes"]; ok {
+		var mutesStr string
+		if mutesStrVal, ok := mutesVal.(string); ok {
+			mutesStr = mutesStrVal
+		} else {
+			mutesJson, _ := json.Marshal(mutesVal)
+			mutesStr = string(mutesJson)
+		}
+		if mutesStr != "" {
+			var mutes []MuteInfo
+			json.Unmarshal([]byte(mutesStr), &mutes)
+			resp.Mutes = mutes
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -503,9 +587,20 @@ func (s *TeamV1ServiceImpl) JoinsTeam(req *JoinsTeamRequestV1) (*core.Result[*Jo
 	}
 
 	resp := &JoinsTeamResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：infos是JSON字符串，需要先解析成字符串再解析成数组
+	if infosVal, ok := jsonObj["infos"]; ok {
+		var infosStr string
+		if infosStrVal, ok := infosVal.(string); ok {
+			infosStr = infosStrVal
+		} else {
+			infosJson, _ := json.Marshal(infosVal)
+			infosStr = string(infosJson)
+		}
+		if infosStr != "" {
+			var infos []JoinsTinfo
+			json.Unmarshal([]byte(infosStr), &infos)
+			resp.Infos = infos
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -535,9 +630,46 @@ func (s *TeamV1ServiceImpl) QueryOnlineTeamMember(req *QueryOnlineTeamMemberRequ
 	}
 
 	resp := &QueryOnlineTeamMemberResponseV1{}
+	// 按照 Java SDK 标准：从data对象解析
 	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+		if dataMap, ok := dataVal.(map[string]interface{}); ok {
+			if countVal, ok := dataMap["count"]; ok {
+				if countFloat, ok := countVal.(float64); ok {
+					resp.Count = int(countFloat)
+				}
+			}
+			// 特殊处理status字段：它是一个对象，key是accid，value是数组
+			if statusVal, ok := dataMap["status"]; ok {
+				if statusMap, ok := statusVal.(map[string]interface{}); ok {
+					var onlineStatusList []OnlineStatus
+					for accid, statusArrayVal := range statusMap {
+						onlineStatus := OnlineStatus{Accid: accid}
+						if statusArray, ok := statusArrayVal.([]interface{}); ok {
+							var statusList []Status
+							for _, statusItem := range statusArray {
+								if statusItemMap, ok := statusItem.(map[string]interface{}); ok {
+									var status Status
+									if clientTypeVal, ok := statusItemMap["clientType"]; ok {
+										if clientTypeFloat, ok := clientTypeVal.(float64); ok {
+											status.ClientType = int(clientTypeFloat)
+										}
+									}
+									if loginTimeVal, ok := statusItemMap["loginTime"]; ok {
+										if loginTimeFloat, ok := loginTimeVal.(float64); ok {
+											status.LoginTime = int64(loginTimeFloat)
+										}
+									}
+									statusList = append(statusList, status)
+								}
+							}
+							onlineStatus.StatusList = statusList
+						}
+						onlineStatusList = append(onlineStatusList, onlineStatus)
+					}
+					resp.Status = onlineStatusList
+				}
+			}
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -567,9 +699,20 @@ func (s *TeamV1ServiceImpl) BatchQueryOnlineTeamMemberCount(req *BatchQueryOnlin
 	}
 
 	resp := &BatchQueryOnlineTeamMemberCountResponseV1{}
+	// 按照 Java SDK 标准：data是JSON字符串，需要先解析成字符串再解析成数组
 	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+		var dataStr string
+		if dataStrVal, ok := dataVal.(string); ok {
+			dataStr = dataStrVal
+		} else {
+			dataJson, _ := json.Marshal(dataVal)
+			dataStr = string(dataJson)
+		}
+		if dataStr != "" {
+			var dataList []teamOnlineCount
+			json.Unmarshal([]byte(dataStr), &dataList)
+			resp.Data = dataList
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -631,9 +774,20 @@ func (s *TeamV1ServiceImpl) QueryAllJoinedTeamMemberInfoByAccId(req *QueryAllJoi
 	}
 
 	resp := &QueryAllJoinedTeamMemberInfoByAccIdResponseV1{}
+	// 按照 Java SDK 标准：data是JSON字符串，需要先解析成字符串再解析成数组
 	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+		var dataStr string
+		if dataStrVal, ok := dataVal.(string); ok {
+			dataStr = dataStrVal
+		} else {
+			dataJson, _ := json.Marshal(dataVal)
+			dataStr = string(dataJson)
+		}
+		if dataStr != "" {
+			var dataList []TeamMemberInfo
+			json.Unmarshal([]byte(dataStr), &dataList)
+			resp.Data = dataList
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

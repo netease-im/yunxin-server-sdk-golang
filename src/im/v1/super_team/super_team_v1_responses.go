@@ -4,7 +4,8 @@ package super_team
 
 // CreateSuperTeamResponseV1 CreateSuperTeam响应
 type CreateSuperTeamResponseV1 struct {
-	Tid int64 `json:"tid,omitempty"`
+	Tid    int64                     `json:"tid,omitempty"`
+	Faccid *SuperTeamFailAccountList `json:"faccid,omitempty"`
 }
 
 // GetJoinSuperTeamInfo GetJoinSuperTeamInfo
@@ -132,6 +133,7 @@ type SuperTeamInfo struct {
 
 // SuperTeamInviteResponseV1 SuperTeamInvite响应
 type SuperTeamInviteResponseV1 struct {
+	Faccid *SuperTeamFailAccountList `json:"faccid,omitempty"`
 }
 
 // SuperTeamKickMemberResponseV1 SuperTeamKickMember响应

@@ -96,10 +96,14 @@ func (c *ChatroomMessageV2ServiceImpl) RecallChatroomMessage(req *RecallChatroom
 	if req.CreateTime > 0 {
 		queryParams["create_time"] = strconv.FormatInt(req.CreateTime, 10)
 	}
-	if req.NotificationEnabled {
-		queryParams["notification_enabled"] = "true"
-		if req.NotificationExtension != "" {
-			queryParams["notification_extension"] = req.NotificationExtension
+	if req.NotificationEnabled != nil {
+		if *req.NotificationEnabled {
+			queryParams["notification_enabled"] = "true"
+			if req.NotificationExtension != "" {
+				queryParams["notification_extension"] = req.NotificationExtension
+			}
+		} else {
+			queryParams["notification_enabled"] = "false"
 		}
 	}
 
@@ -139,7 +143,7 @@ func (c *ChatroomMessageV2ServiceImpl) QueryChatroomHistoryMessages(req *QueryCh
 		queryParams["page_token"] = req.PageToken
 	}
 
-	if req.Descending {
+	if req.Descending != nil && *req.Descending {
 		queryParams["descending"] = "true"
 	}
 

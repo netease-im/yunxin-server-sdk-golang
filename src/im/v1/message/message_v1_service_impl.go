@@ -63,9 +63,21 @@ func (s *MessageV1ServiceImpl) SendBatchMessage(req *SendBatchMessageRequestV1) 
 	}
 
 	resp := &SendBatchMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：直接从根对象解析字段
+	if unregisterVal, ok := jsonObj["unregister"]; ok {
+		unregisterJson, _ := json.Marshal(unregisterVal)
+		var unregisterList []string
+		json.Unmarshal(unregisterJson, &unregisterList)
+		resp.Unregister = unregisterList
+	}
+	if timetagVal, ok := jsonObj["timetag"]; ok {
+		resp.Timetag = int64(timetagVal.(float64))
+	}
+	if msgidsVal, ok := jsonObj["msgids"]; ok {
+		msgidsJson, _ := json.Marshal(msgidsVal)
+		var msgidsMap map[string]int64
+		json.Unmarshal(msgidsJson, &msgidsMap)
+		resp.Msgids = msgidsMap
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -95,9 +107,9 @@ func (s *MessageV1ServiceImpl) UploadFile(req *UploadFileRequestV1) (*core.Resul
 	}
 
 	resp := &UploadFileResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：url 字段直接在根对象中
+	if urlVal, ok := jsonObj["url"]; ok {
+		resp.Url = urlVal.(string)
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -159,9 +171,34 @@ func (s *MessageV1ServiceImpl) BroadcastMessage(req *BroadcastMessageRequestV1) 
 	}
 
 	resp := &BroadcastMessageResponseV1{}
-	if dataVal, ok := jsonObj["data"]; ok {
-		dataJson, _ := json.Marshal(dataVal)
-		json.Unmarshal(dataJson, resp)
+	// 按照 Java SDK 标准：响应数据在 msg 字段中
+	if msgVal, ok := jsonObj["msg"]; ok {
+		if msgMap, ok := msgVal.(map[string]interface{}); ok {
+			if broadcastIdVal, ok := msgMap["broadcastId"]; ok {
+				resp.BroadcastId = int64(broadcastIdVal.(float64))
+			}
+			if fromVal, ok := msgMap["from"]; ok {
+				resp.From = fromVal.(string)
+			}
+			if bodyVal, ok := msgMap["body"]; ok {
+				resp.Body = bodyVal.(string)
+			}
+			if targetOsVal, ok := msgMap["targetOs"]; ok {
+				targetOsJson, _ := json.Marshal(targetOsVal)
+				var targetOsList []string
+				json.Unmarshal(targetOsJson, &targetOsList)
+				resp.TargetOs = targetOsList
+			}
+			if isOfflineVal, ok := msgMap["isOffline"]; ok {
+				resp.IsOffline = isOfflineVal.(bool)
+			}
+			if createTimeVal, ok := msgMap["createTime"]; ok {
+				resp.CreateTime = int64(createTimeVal.(float64))
+			}
+			if expireTimeVal, ok := msgMap["expireTime"]; ok {
+				resp.ExpireTime = int64(expireTimeVal.(float64))
+			}
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -223,6 +260,11 @@ func (s *MessageV1ServiceImpl) DeleteMessage(req *DeleteMessageRequestV1) (*core
 	}
 
 	resp := &DeleteMessageResponseV1{}
+	// 按照 Java SDK 标准：从 data 字段解析
+	if dataVal, ok := jsonObj["data"]; ok {
+		dataJson, _ := json.Marshal(dataVal)
+		json.Unmarshal(dataJson, resp)
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
@@ -251,6 +293,11 @@ func (s *MessageV1ServiceImpl) DeleteMessageOneWay(req *DeleteMessageOneWayReque
 	}
 
 	resp := &DeleteMessageOneWayResponseV1{}
+	// 按照 Java SDK 标准：从 data 字段解析
+	if dataVal, ok := jsonObj["data"]; ok {
+		dataJson, _ := json.Marshal(dataVal)
+		json.Unmarshal(dataJson, resp)
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
@@ -279,6 +326,10 @@ func (s *MessageV1ServiceImpl) DeleteFile(req *DeleteFileRequestV1) (*core.Resul
 	}
 
 	resp := &DeleteFileResponseV1{}
+	if dataVal, ok := jsonObj["data"]; ok {
+		dataJson, _ := json.Marshal(dataVal)
+		json.Unmarshal(dataJson, resp)
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
@@ -307,6 +358,11 @@ func (s *MessageV1ServiceImpl) DeleteRoamSession(req *DeleteRoamSessionRequestV1
 	}
 
 	resp := &DeleteRoamSessionResponseV1{}
+	// 按照 Java SDK 标准：从 data 字段解析
+	if dataVal, ok := jsonObj["data"]; ok {
+		dataJson, _ := json.Marshal(dataVal)
+		json.Unmarshal(dataJson, resp)
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
@@ -335,6 +391,10 @@ func (s *MessageV1ServiceImpl) MarkReadMessage(req *MarkReadMessageRequestV1) (*
 	}
 
 	resp := &MarkReadMessageResponseV1{}
+	if dataVal, ok := jsonObj["data"]; ok {
+		dataJson, _ := json.Marshal(dataVal)
+		json.Unmarshal(dataJson, resp)
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }
@@ -363,6 +423,17 @@ func (s *MessageV1ServiceImpl) MarkReadTeamMessage(req *MarkReadTeamMessageReque
 	}
 
 	resp := &MarkReadTeamMessageResponseV1{}
+	// 按照 Java SDK 标准：从 data.errMsgIds 解析
+	if dataVal, ok := jsonObj["data"]; ok {
+		if dataMap, ok := dataVal.(map[string]interface{}); ok {
+			if errMsgIdsVal, ok := dataMap["errMsgIds"]; ok {
+				errMsgIdsJson, _ := json.Marshal(errMsgIdsVal)
+				var errMsgIdsList []int64
+				json.Unmarshal(errMsgIdsJson, &errMsgIdsList)
+				resp.ErrMsgIds = errMsgIdsList
+			}
+		}
+	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
 }

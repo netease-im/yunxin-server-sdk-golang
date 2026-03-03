@@ -42,6 +42,6 @@ type ListAllConversationGroupsRequestV2 struct {
 
 // Conversations 会话操作
 type Conversations struct {
-	Type            int      `json:"type"`                       // 操作类型
+	Type            *int     `json:"type"`                       // 操作类型
 	ConversationIds []string `json:"conversation_ids,omitempty"` // 会话ID列表
 }

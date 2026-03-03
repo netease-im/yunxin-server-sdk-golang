@@ -5,7 +5,7 @@ package system_notification
 // SendAttachMsgRequestV1 SendAttachMsg请求
 type SendAttachMsgRequestV1 struct {
 	From                  string   `json:"from,omitempty"`
-	MsgType               int      `json:"msgtype,omitempty"`
+	MsgType               *int     `json:"msgtype,omitempty"` // 使用指针，0是有效值
 	To                    string   `json:"to,omitempty"`
 	Attach                string   `json:"attach,omitempty"`
 	PushContent           string   `json:"pushcontent,omitempty"`

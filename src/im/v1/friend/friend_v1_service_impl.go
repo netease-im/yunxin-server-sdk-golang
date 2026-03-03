@@ -115,9 +115,20 @@ func (f *FriendV1ServiceImpl) Get(req *GetFriendListRequestV1) (*core.Result[*Ge
 	}
 
 	resp := &GetFriendListResponseV1{}
-	if friendsVal, ok := jsonObj["friends"]; ok {
-		friendsJson, _ := json.Marshal(friendsVal)
-		json.Unmarshal(friendsJson, &resp.Friends)
+	// 按照 Java SDK 标准：从根对象解析friends（JSON字符串）
+	if friendsVal, ok := jsonObj["friends"]; ok && friendsVal != nil {
+		var friendsStr string
+		if friendsStrVal, ok := friendsVal.(string); ok {
+			friendsStr = friendsStrVal
+		} else {
+			friendsJson, _ := json.Marshal(friendsVal)
+			friendsStr = string(friendsJson)
+		}
+		if friendsStr != "" {
+			var friends []FriendInfo
+			json.Unmarshal([]byte(friendsStr), &friends)
+			resp.Friends = friends
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil
@@ -147,9 +158,18 @@ func (f *FriendV1ServiceImpl) GetByAccid(req *GetFriendRelationshipRequestV1) (*
 	}
 
 	resp := &GetFriendRelationshipResponseV1{}
-	if friendVal, ok := jsonObj["friend"]; ok {
-		friendJson, _ := json.Marshal(friendVal)
-		json.Unmarshal(friendJson, resp)
+	// 按照 Java SDK 标准：从根对象解析friend（JSON字符串）
+	if friendVal, ok := jsonObj["friend"]; ok && friendVal != nil {
+		var friendStr string
+		if friendStrVal, ok := friendVal.(string); ok {
+			friendStr = friendStrVal
+		} else {
+			friendJson, _ := json.Marshal(friendVal)
+			friendStr = string(friendJson)
+		}
+		if friendStr != "" {
+			json.Unmarshal([]byte(friendStr), resp)
+		}
 	}
 
 	return core.NewResult(apiResponse.GetEndpoint(), code, apiResponse.GetTraceId(), "", resp), nil

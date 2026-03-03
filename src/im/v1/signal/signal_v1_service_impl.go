@@ -7,7 +7,7 @@ import (
 	"github.com/netease-im/yunxin-server-sdk-golang/src/core/utils"
 )
 
-// CreateSignalRoom CreateSignalRoom
+// CreateSignalRoom
 func (s *SignalV1ServiceImpl) CreateSignalRoom(req *CreateSignalRoomRequestV1) (*core.Result[*CreateSignalRoomResponseV1], error) {
 	paramMap := utils.Convert(req)
 

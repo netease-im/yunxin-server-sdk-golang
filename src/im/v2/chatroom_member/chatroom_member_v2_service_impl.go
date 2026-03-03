@@ -18,7 +18,7 @@ func (c *ChatroomMemberV2ServiceImpl) SetMemberRole(req *SetMemberRoleRequestV2)
 		return nil, fmt.Errorf("chatroom ID cannot be empty")
 	}
 
-	if req.MemberRole == 0 {
+	if req.MemberRole == nil {
 		return nil, fmt.Errorf("member role cannot be empty")
 	}
 
@@ -154,10 +154,6 @@ func (c *ChatroomMemberV2ServiceImpl) ModifyMemberTags(req *ModifyMemberTagsRequ
 		return nil, fmt.Errorf("chatroom ID cannot be empty")
 	}
 
-	if len(req.Tags) == 0 {
-		return nil, fmt.Errorf("tags cannot be empty")
-	}
-
 	pathParams := map[string]string{
 		"account_id": req.AccountId,
 	}
@@ -167,7 +163,7 @@ func (c *ChatroomMemberV2ServiceImpl) ModifyMemberTags(req *ModifyMemberTagsRequ
 		return nil, err
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.PUT, ModifyMemberTags, pathParams, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.PATCH, ModifyMemberTags, pathParams, nil, string(requestBody))
 	if err != nil {
 		return nil, err
 	}
@@ -344,12 +340,21 @@ func (c *ChatroomMemberV2ServiceImpl) DeleteVirtualMembers(req *DeleteVirtualMem
 		return nil, fmt.Errorf("account IDs cannot be empty")
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	// Set query parameters (no request body for DELETE)
+	queryParams := map[string]string{
+		"room_id": strconv.FormatInt(req.RoomId, 10),
+	}
+	// account_ids as comma-separated list
+	queryParams["account_ids"] = strings.Join(req.AccountIds, ",")
+	if req.NotificationEnabled != nil {
+		if *req.NotificationEnabled {
+			queryParams["notification_enabled"] = "true"
+		} else {
+			queryParams["notification_enabled"] = "false"
+		}
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.DELETE, DeleteVirtualMembers, nil, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.DELETE, DeleteVirtualMembers, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
@@ -364,12 +369,19 @@ func (c *ChatroomMemberV2ServiceImpl) ClearVirtualMembers(req *ClearVirtualMembe
 		return nil, fmt.Errorf("chatroom ID cannot be empty")
 	}
 
-	requestBody, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	// Set query parameters (no request body for DELETE)
+	queryParams := map[string]string{
+		"room_id": strconv.FormatInt(req.RoomId, 10),
+	}
+	if req.NotificationEnabled != nil {
+		if *req.NotificationEnabled {
+			queryParams["notification_enabled"] = "true"
+		} else {
+			queryParams["notification_enabled"] = "false"
+		}
 	}
 
-	apiResponse, err := c.httpClient.ExecuteV2Api(http.POST, ClearVirtualMembers, nil, nil, string(requestBody))
+	apiResponse, err := c.httpClient.ExecuteV2Api(http.DELETE, ClearVirtualMembers, nil, queryParams, "")
 	if err != nil {
 		return nil, err
 	}
